@@ -3,7 +3,6 @@
 \begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Content %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 \tableofcontents
 \clearpage
 
@@ -11,31 +10,159 @@
 
 \end{abstract}
 %%%%%%%%%%%%%%%%%%%%%%%%%% Main %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[video to text introdution]
+
 \section{Introduction}
-The task of automatically describing videos containing
-rich and open-domain activities poses an important challenges
-for computer vision and machine learning research.
-It also has a variety of practical applications.
+The task of automatically describing videos containing rich and open-domain activities poses an important challenges for computer vision and machine learning research. Recent progress in recurrent neural networks (RNNs) for neural machine translation and image caption generation has motivated the exploration of video description task. Compared with image caption task, video has additional time domain information, which make it more difficult to handle.
 
-\section{Related works}
-\subsection{Sequence learning task}
+As argued in \cite{yao2015describing}, there are two categories of temporal structure present in video: (1) local structure and (2) global structure. Local temporal structure can be expressed using optical flow, 3D-CNN \cite{tran2014c3d} or other technique. Optical flow contains information about direction, speed of moving, and is demonstrated useful in action recognition task \cite{simonyan2014two}. Yet global structure is more difficult to express. Most videos can be divided in to serval clips, each clip has similar frames, and scene changes between different clips. In this work, we attempt to find a way to better express the relationship between those clips, thus getting a better representation of the whole video, and test our model on video caption task.
 
-\subsection{Image captioning}
-Automatically generating a natural language description of an image, a problem known as image captioning, has recently received a lot of attention in Computer Vision. The problem is interesting not only because it has important practical applications, such as helping visually impaired people see, but also because it is regarded as a grand challenge for image understanding which is a core problem in Computer Vision.
+\section{Background}
+\subsection{Recurrent and convolutional neural network}
+A recurrent neural network (RNN) is a neural network specialized at handling a variable-length input sequence $\mathbf{x}=(x_1,...,x_T)$ and optionally a corresponding variable-length output sequence $\mathbf{y}=(y_1,...,y_T)$, using an internal hidden state $h$. The RNN sequentially reads each symbol $x_t$ of the input sequence and updates its internal hidden state $h_t$ according to
+\begin{equation}
+h_t=\phi_\theta(h_{t-1},x_t)
+\end{equation}
+where $\phi_\theta$ is a nonlinear activation function parametrized by a set of parameters $\theta$. When the target sequence is given, the RNN can be trained to sequentially make a prediction $\hat{y}_t$ of $\y_t$ at each time step $t$.
+\begin{equation}
+\hat{y}_t=g_\theta(h_{t},x_t)
+\end{equation}
+where $g_\theta$ may be an arbitrary, parametric function that is learned jointly as a part of the whole network.
 
-\subsection{Video captioning}
+In vanilla RNNs, function $\phi$ is defined as follows:
 
+\begin{equation}
+h_t=\tanh(Uh_{t-1}+Wx_t)
+\end{equation}
+where $U$ and $W$ are learnable matrices.
+
+This version of RNN is demonstrated to have difficulties learning long-range dependencies \cite{hochreiter1991untersuchungen,pascanu2013difficulty}. Using Long short-term memory (LSTM) unit \cite{hochreiter1997long} or GRU \cite{chung2014empirical,cho2014learning} can solve this problem in some extent.
+
+\subsection{RNN-LM: Recurrent Neural Network Language Modeling}
+The task of language modeling is equivalent to the task of predicting the next word. To make prediction, we let a model learn the probability distribution over natural language sentences.
+
+\begin{equation}
+p(w_1,...w_T)=\prod_{t=1}^{T}p(w_t|w_{<t})
+\end{equation}
+where $w_{<t}=(w_1,...w_{t-1})$. A recurrent neural network (RNN) can, thus, be readily used for language modeling by letting it predict the next symbol at each time step $t$. We let the RNN
+predict the probability over the next word by
+
+\begin{equation}
+p(w_{t+1}=w|w_{\le t})=g_{\theta}^w(h_t,w_t)
+\end{equation}
+where $g_{\theta}^w$ returns the probability of the word $w$ out of all possible words.
+
+The RNN-LM described here can be extended to learn a conditional language model. In conditional language modeling, the task is to model the distribution over sentences given an additional input, or context. The context may be anything from an image and a video clip to a sentence in another language. Examples of textual outputs associated with these inputs by the conditional RNN-LM include respectively an image caption, a video description and a translation. In this case, an additional condition is taken as the input
+
+\begin{equation}
+h_t=\phi_\theta(h_{t-1},x_t,c)
+\end{equation}
+
+\subsection{Deep convolutional network}
+A convolutional neural network (CNN) is a special type of a more general feed forward neural network, or multilayer perceptron, that has been specifically designed to work well with two-dimensional images \cite{lecun1998gradient}. . The CNN often consists of multiple convolutional layers followed by a few fully connected layers or average pooling \cite{lin2013network,szegedy2015going}. In recent years, deep CNN architecture has dominated the ImageNet Large-Scale Visual Recognition Challenge (ILSVRC) since 2012 \cite{krizhevsky2012imagenet,simonyan2014very,szegedy2015going,he2015deep}. Deep CNN is demonstrated being able to learn high level features of an image automatically\cite{zeiler2014visualizing}, thus can be used for other tasks, like image or video captioning.
+
+\subsection{Encoder-decoder network}
+An encoder–decoder framework is a general framework based on neural networks that aims at handling the mapping between highly structured input and output. It is recently proposed in \cite{sutskever2014sequence,cho2014learning} in the context of neural machine translation.
+
+As the name suggests, a neural network based on this encoder–decoder framework consists of an encoder and a decoder. The encoder $f_{enc}$ first reads the input data $x$ into a continuous-space representation $c$
+
+\begin{equation}
+c=f_{enc}(x)
+\end{equation}
+
+The choice of $f_{enc}$ largely depends on the type of input. When $x$ is a two-dimensional image, a convolutional neural network (CNN) may be used. When $x$ is a sentence, a recurrent neural network (RNN) is a natural choice. And when $x$ is a video stream, a CNN is always used to extract static information in frames, while multiple approaches are proposed to extract temporal information, like using an RNN \cite{venugopalan2015sequence}, using attention mechanism \cite{yao2015describing} or combine them together \cite{pan2015hierarchical}.
+
+In all these recent applications of the encoder decoder framework, the continuous space representation $c$ of the input $x$ returned by an encoder has been a fixed dimensional vector, regardless of the size of the input. Furthermore, the context vector was not structured by design, but rather an arbitrary vector, which means that there is no guarantee that the context vector preserves the spatial, temporal or spatio-temporal structures of the input.
 
 \subsection{Attention}
 Attention mechanism is a popular topic in deep learning these years. It is loosely based on human visual attention mechanism, as we tend to focus on a certain region with “high resolution” while perceiving the surrounding image in “low resolution”, and then adjust the focal point over time. Attention is successfully used in machine translation\cite{bahdanau2014neural}, image captioning\cite{xu2015show}, and video captioning\cite{venugopalan2014translating} tasks (these are the very first work using attention in their tasks).
 
-\begin{figure}[htbp]
+As pointed in the previous section, a naive implementation of the encoder–decoder framework requires the encoder to compress the input into a single vector of predefined dimensionality, regardless of the size of or the amount of information in the input. Take image/video captioning for an example. When generating image caption using encoder-decoder framework, CNN is used to extract a single vector representation of an image. But when it comes to video captioning, we will get a set of feature vectors over all frames. In this case, we still want to use image caption model, but that model only support one feature input. Here an idea comes up that we can combine a set of features to a single feature, then simply use image caption model. The easiest way is to calculate the mean value of all vectors, thus get a single vector representation \cite{venugopalan2014translating}. Picture \ref{fig:mp} shows the structure of this model.
+
+\begin{figure}
 \centering
-\includegraphics[width=11cm]{resources/logo.jpg}
-\caption{No caption}
-\label{fig:fullarm}
+\includegraphics[width=11cm]{resources/mp.png}
+\caption{Structure of video captioning system using mean pooling \cite{venugopalan2014translating}}
+\label{fig:mp}
 \end{figure}
+
+Obviously, this approach fails to consider the temporal order of frames, and gives the same input to the decoder in every time step (as shown in the figure above). We can easily improve this model by replacing the arithmetic mean with weighted average \cite{yao2015describing}. Picture \ref{fig:sa} shows this structure.
+
+\begin{figure}
+\centering
+\includegraphics[width=11cm]{resources/sa.png}
+\caption{Structure of video captioning system using temporal attention \cite{yao2015describing}}
+\label{fig:sa}
+\end{figure}
+
+Ideally, we can let the model automatically choose the weights to attend on the most relevant set of frames when generating different words. These weights should be the function of current hidden state in RNN, conditioned on the CNN feature of frames.
+
+\begin{equation}
+e_{i}^{(t)} = f(v_i, h^{(t-1)})
+\end{equation}
+
+In this equation, $v_i$ represents a feature vector, and $h_{t-1}$ is the previous hidden state of which unit the weighted feature is going to input to. And assume $N$ is the number of frames and $T$ is the total number of time steps in RNN, we will have $i\in [1,N]$ and $t\in [1,T]$. (We can define $h^{(0)}$ as $\mathbf{0}$ vector so $t=1$ makes sense).
+
+ut this doesn't make sure $e_{i}^{(t)}$ will have a sum to 1 over all features (_i.e._ $\sum_{i=1}^Ne_i^{(t)}\neq 1$, remember we are doing weighted average!). So we apply softmax over them as follows.
+
+\begin{equation}
+\alpha_{i}^{(t)} = \frac{exp\{e_{i}^{(t)}\}}{\sum_{i=1}^Nexp\{e_{i}^{(t)}\}}
+\end{equation}
+
+This will give you $\sum_{i=1}^N\alpha_{i}^{(t)}=1$, so we can calculate a single feature for each time step as
+
+\begin{equation}
+\phi^{(t)}=\sum_{i=1}^N\alpha_{i}^{(t)}v_i
+\end{equation}
+
+So how we define $f(v_i,h^{(t)})$? That's much the similar of what we do in a node of neural. Just a linear function over $v_i$ and $h^{(t-1)}$ and add a non-linear activation function. Here we use $\tanh$ as the activation function.
+
+\begin{equation}
+e_{i}^{(t)} = w^T\tanh(W_ah^{(t-1)}+U_av_i+b_a)
+\end{equation}
+In which $w,W_a,U_a,b_a$ are all learnable parameters. Here we assume $r$ to be the size of an RNN hidden state, $m$ to be the encoding size of CNN, $a$ to be the attention matrix size (you can play with this parameter), we can list the size of those variables as follows
+
+\begin{align}
+v_i\in \mathbb{R}^{m} \\
+h^{(t)}\in \mathbb{R}^{r}\\
+W_a\in \mathbb{R}^{a\times r}\\
+U_a\in \mathbb{R}^{a\times m}\\
+b_a, w \in \mathbb{R}^{a}
+\end{align}
+So this gives $e_i^{(t)}$ as a scalar value.
+
+Another detail is that we share those learnable parameters both for different $i$ (features) and different $t$ (time steps), just like what RNN does. It can be implemented into the RNN unit so that the unit like LSTM can take a sequence as input. And as the equations are all differential, we can learn those parameters using back propagation with any optimization method.
+
+This mechanism can definitely be used in other problems as long as you can transform the problem to a sequence representation. Theoretically, it will perform better than input a single item of a sequence because that can be described as a one-hot weight (i.e. weight over the sequence with a vector that only a single position takes 1 and others are all 0). However, if the attention matrix size $a$ is too small, intuitively, it won't cover all the possible weights to minimize the cost function, so the choice of $a$ is important.
+
+\section{Experiment}
+In this project, we explore several architectures of video captioning model. The implementation is based on NeuralTalk2 \footnote{https://github.com/karpathy/neuraltalk2}. We mainly use MSR-VTT dataset \cite{xu2016msr}, but we are still planning to try our model on other datasets such as TGIF \cite{li2016tgif}. Code is available 
+\subsection{Dataset}
+
+\subsection{Model architecture}
+\paragraph{CNN encoder with meanpool}
+The architecture is show in Figure \ref{fig:mp}. We tried different hidden state size $r=256,512,1024$ and found $r=512$ performs best on MSR-VTT dataset.
+
+\paragraph{CNN encoder with attention}
+
+\paragraph{RNN encoder}
+
+\paragraph{Stacked LSTM}
+
+\paragraph{Encoder with temporal segmentation}
+
+\subsection{Result and analyses}
+
+\section{Related works}
+\subsection{Image captioning with RNNs}
+Automatically generating a natural language description of an image, a problem known as image captioning, has recently received a lot of attention in Computer Vision. The problem is interesting not only because it has important practical applications, such as helping visually impaired people see, but also because it is regarded as a grand challenge for image understanding which is a core problem in Computer Vision. The first attempt of visual to text translation using RNNs was seen in the work of image captioning \cite{Mao2014Deep}
+
+\subsection{Video captioning with RNNs}
+Early work 
+
+\section{Web interface}
+
+\section{Future works}
+\section{Acknowledge}
 
 
 \bibliography{reference}
