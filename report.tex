@@ -135,14 +135,20 @@ Another detail is that we share those learnable parameters both for different $i
 This mechanism can definitely be used in other problems as long as you can transform the problem to a sequence representation. Theoretically, it will perform better than input a single item of a sequence because that can be described as a one-hot weight (i.e. weight over the sequence with a vector that only a single position takes 1 and others are all 0). However, if the attention matrix size $a$ is too small, intuitively, it won't cover all the possible weights to minimize the cost function, so the choice of $a$ is important.
 
 \section{Experiment}
-In this project, we explore several architectures of video captioning model. The implementation is based on NeuralTalk2 \footnote{https://github.com/karpathy/neuraltalk2}. We mainly use MSR-VTT dataset \cite{xu2016msr}, but we are still planning to try our model on other datasets such as TGIF \cite{li2016tgif}. Code is available 
+In this project, we explore several architectures of video captioning model. The implementation is based on NeuralTalk2\footnote{https://github.com/karpathy/neuraltalk2}. We mainly use MSR-VTT dataset \cite{xu2016msr}, but we are still planning to try our model on other datasets such as TGIF \cite{li2016tgif}.
 \subsection{Dataset}
+\paragraph{Microsoft Research - Video to Text (MSR-VTT)}
+MSR-VTT provides 10K web video clips with 41.2 hours and 200K clip-sentence pairs in total, covering the most comprehensive categories and diverse visual content, and representing the largest dataset in terms of sentence and vocabulary. Each clip is annotated with about 20 natural sentences by 1,327 AMT workers. You can find a brief description of this dataset here\footnote{https://github.com/chaonan99/chaonan99\_note/blob/master/paper/201609.md\#microsoft-research-video-to-text-msr-vtt}. This is one of my works in the summer.
 
-\subsection{Model architecture}
+\paragraph{Tumblr GIF (TGIF)}
+The Tumblr GIF (TGIF) dataset contains 100K animated GIFs and 120K sentences describing visual content of the animated GIFs. The animated GIFs have been collected from Tumblr, from randomly selected posts published between May and June of 2015. We provide the URLs of animated GIFs in this release. The sentences are collected via crowdsourcing, with a carefully designed annotation interface that ensures high quality dataset. We provide one sentence per animated GIF for the training and validation splits, and three sentences per GIF for the test split. The dataset shall be used to evaluate animated GIF/video description techniques. You can find a brief description of this dataset here\footnote{https://github.com/chaonan99/chaonan99\_note/blob/master/paper/201609.md\#tumblr-gif-tgif}.
+
+\subsection{Models}
 \paragraph{CNN encoder with meanpool}
-The architecture is show in Figure \ref{fig:mp}. We tried different hidden state size $r=256,512,1024$ and found $r=512$ performs best on MSR-VTT dataset.
+The architecture is shown in Figure \ref{fig:mp}. We tried different hidden state size $r=256,512,1024$ and found $r=512$ performs best on MSR-VTT dataset. As the GPU of my computer has small memory, we set batch size as 1. We set learning rate to be $4e-4$ and tried two schedules. One is fixed learning rate, another is dividing the learning rate by 2 every 5000 iteration. We use adam optimizer \cite{Kingma2014Adam}. We found it little differences between two schedules. The model converge after 8~9 epochs.
 
 \paragraph{CNN encoder with attention}
+The architecture is shown in Figure \ref{fig:sa}. We set hidden state size $r=512$ and attention matrix size $a=512$, and other settings the same as mean pooling model for comparison.
 
 \paragraph{RNN encoder}
 
