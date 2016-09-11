@@ -3,6 +3,64 @@
 \begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Content %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+
+\includegraphics[width=0.25\textwidth]{resources/logo.jpg}\\[1cm] % Include a department/university logo - this will require the graphicx package
+
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\LARGE Tsinghua University}\\[1.5cm] % Name of your university/college
+\textsc{\Large Department of Automation}\\[2.5cm] % Major heading such as course name
+% \textsc{\large Minor Heading}\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{ \large \bfseries Express Long-Term Temporal Structure of Video with Application in Video Captioning Task}\\[0.4cm] % Title of your document
+\HRule \\[3.5cm]
+
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Author:}\\
+Haonan \textsc{Chen} % Your name
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Supervisor:} \\
+Dr. Jason \textsc{Corso} % Supervisor's Name
+\end{flushright}
+\end{minipage}\\[5cm]
+
+% If you don't want a supervisor, uncomment the two lines below and remove the section above
+%\Large \emph{Author:}\\
+%John \textsc{Smith}\\[3cm] % Your name
+
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large \today}\\[3cm] % Date, change the \today to a set date if you want to be precise
+
+%----------------------------------------------------------------------------------------
+
+\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
 \tableofcontents
 \clearpage
 
@@ -73,18 +131,18 @@ In all these recent applications of the encoder decoder framework, the continuou
 \subsection{Attention}
 Attention mechanism is a popular topic in deep learning these years. It is loosely based on human visual attention mechanism, as we tend to focus on a certain region with “high resolution” while perceiving the surrounding image in “low resolution”, and then adjust the focal point over time. Attention is successfully used in machine translation\cite{bahdanau2014neural}, image captioning\cite{xu2015show}, and video captioning\cite{venugopalan2014translating} tasks (these are the very first work using attention in their tasks).
 
-As pointed in the previous section, a naive implementation of the encoder–decoder framework requires the encoder to compress the input into a single vector of predefined dimensionality, regardless of the size of or the amount of information in the input. Take image/video captioning for an example. When generating image caption using encoder-decoder framework, CNN is used to extract a single vector representation of an image. But when it comes to video captioning, we will get a set of feature vectors over all frames. In this case, we still want to use image caption model, but that model only support one feature input. Here an idea comes up that we can combine a set of features to a single feature, then simply use image caption model. The easiest way is to calculate the mean value of all vectors, thus get a single vector representation \cite{venugopalan2014translating}. Picture \ref{fig:mp} shows the structure of this model.
-
-\begin{figure}
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=11cm]{resources/mp.png}
 \caption{Structure of video captioning system using mean pooling \cite{venugopalan2014translating}}
 \label{fig:mp}
 \end{figure}
 
+As pointed in the previous section, a naive implementation of the encoder–decoder framework requires the encoder to compress the input into a single vector of predefined dimensionality, regardless of the size of or the amount of information in the input. Take image/video captioning for an example. When generating image caption using encoder-decoder framework, CNN is used to extract a single vector representation of an image. But when it comes to video captioning, we will get a set of feature vectors over all frames. In this case, we still want to use image caption model, but that model only support one feature input. Here an idea comes up that we can combine a set of features to a single feature, then simply use image caption model. The easiest way is to calculate the mean value of all vectors, thus get a single vector representation \cite{venugopalan2014translating}. Picture \ref{fig:mp} shows the structure of this model.
+
 Obviously, this approach fails to consider the temporal order of frames, and gives the same input to the decoder in every time step (as shown in the figure above). We can easily improve this model by replacing the arithmetic mean with weighted average \cite{yao2015describing}. Picture \ref{fig:sa} shows this structure.
 
-\begin{figure}
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=11cm]{resources/sa.png}
 \caption{Structure of video captioning system using temporal attention \cite{yao2015describing}}
@@ -111,21 +169,21 @@ This will give you $\sum_{i=1}^N\alpha_{i}^{(t)}=1$, so we can calculate a singl
 \phi^{(t)}=\sum_{i=1}^N\alpha_{i}^{(t)}v_i
 \end{equation}
 
-So how we define $f(v_i,h^{(t)})$? That's much the similar of what we do in a node of neural. Just a linear function over $v_i$ and $h^{(t-1)}$ and add a non-linear activation function. Here we use $\tanh$ as the activation function.
+The way we define $f(v_i,h^{(t)})$ is much the similar of what we do in a node of neural. Just a linear function over $v_i$ and $h^{(t-1)}$ and add a non-linear activation function. Here we use $\tanh$ as the activation function.
 
 \begin{equation}
 e_{i}^{(t)} = w^T\tanh(W_ah^{(t-1)}+U_av_i+b_a)
 \end{equation}
 In which $w,W_a,U_a,b_a$ are all learnable parameters. Here we assume $r$ to be the size of an RNN hidden state, $m$ to be the encoding size of CNN, $a$ to be the attention matrix size (you can play with this parameter), we can list the size of those variables as follows
 
-\begin{align}
+\begin{align*}
 v_i&\in \mathbb{R}^{m} \\
 h^{(t)}&\in \mathbb{R}^{r}\\
 W_a&\in \mathbb{R}^{a\times r}\\
 U_a&\in \mathbb{R}^{a\times m}\\
 b_a, w &\in \mathbb{R}^{a}
-\end{align}
-So this gives $e_i^{(t)}$ as a scalar value.
+\end{align*}
+This gives $e_i^{(t)}$ as a scalar value.
 
 Another detail is that we share those learnable parameters both for different $i$ (features) and different $t$ (time steps), just like what RNN does. It can be implemented into the RNN unit so that the unit like LSTM can take a sequence as input. And as the equations are all differential, we can learn those parameters using back propagation with any optimization method.
 
@@ -140,25 +198,17 @@ MSR-VTT provides 10K web video clips with 41.2 hours and 200K clip-sentence pair
 \paragraph{Tumblr GIF (TGIF)}
 The Tumblr GIF (TGIF) dataset contains 100K animated GIFs and 120K sentences describing visual content of the animated GIFs. The animated GIFs have been collected from Tumblr, from randomly selected posts published between May and June of 2015. We provide the URLs of animated GIFs in this release. The sentences are collected via crowdsourcing, with a carefully designed annotation interface that ensures high quality dataset. We provide one sentence per animated GIF for the training and validation splits, and three sentences per GIF for the test split. The dataset shall be used to evaluate animated GIF/video description techniques. You can find a brief description of this dataset here\footnote{\url{https://github.com/chaonan99/chaonan99\_note/blob/master/paper/201609.md\#tumblr-gif-tgif}}.
 
-\subsection{Models}
-For all models, we use pre-trained VGG-16 \cite{simonyan2014very} network to generate frame level feature vector.
-\paragraph{CNN encoder with meanpool}
-The architecture is shown in Figure \ref{fig:mp}. We tried different hidden state size $r=256,512,1024$ and found $r=512$ performs best on MSR-VTT dataset. As the GPU of my computer has small memory, we set batch size as 1 and we only extract 15 frames for each video. We set learning rate to be $4e-4$ and tried two schedules. One is fixed learning rate, another is dividing the learning rate by 2 every 5000 iteration. We use adam optimizer \cite{Kingma2014Adam}. We found it little differences between two schedules. The model converge after 8\~9 epochs.
-
-\paragraph{CNN encoder with attention}
-The architecture is shown in Figure \ref{fig:sa}. We set hidden state size $r=512$ and we test different attention matrix size $a=256,512,1024$, and other settings the same as mean pooling model for comparison.
-
-\paragraph{RNN encoder}
-In s2vt \cite{venugopalan2015sequence} model, they use RNNs both in encoder and decoder, as shown in Figure \ref{fig:s2vt}. Yet they share parameters between encoder and decoder.
-
-\begin{figure}
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=11cm]{resources/s2vt.png}
 \caption{S2vt model for video captioning \cite{venugopalan2015sequence}}
 \label{fig:s2vt}
 \end{figure}
 
-Here we implement an RNN encoder model, but we separate encoder and decoder, i.e. do not share parameters between encoder and decoder RNN. We use two-layer LSTM as encoder and input frame features in each time step, and one-layer LSTM as decoder to generate caption. The model is shown in Figure \ref{fig:rnnenc}.
+\subsection{Models}
+For all models, we use pre-trained VGG-16 \cite{simonyan2014very} network to generate frame level feature vector.
+\paragraph{CNN encoder with meanpool}
+The architecture is shown in Figure \ref{fig:mp}. We tried different hidden state size $r=256,512,1024$ and found $r=512$ performs best on MSR-VTT dataset. As the GPU of my computer has small memory, we set batch size as 1 and we only extract 15 frames for each video. We set learning rate to be $4e-4$ and tried two schedules. One is fixed learning rate, another is dividing the learning rate by 2 every 5000 iteration. We use adam optimizer \cite{Kingma2014Adam}. We found it little differences between two schedules. The model converge after 8 - 9 epochs.
 
 \begin{figure}[htbp]
 \begin{minipage}[t]{0.5\linewidth}
@@ -175,8 +225,23 @@ Here we implement an RNN encoder model, but we separate encoder and decoder, i.e
 \end{minipage}
 \end{figure}
 
+\paragraph{CNN encoder with attention}
+The architecture is shown in Figure \ref{fig:sa}. We set hidden state size $r=512$ and we test different attention matrix size $a=256,512,1024$, and other settings the same as mean pooling model for comparison.
+
+\paragraph{RNN encoder}
+In s2vt \cite{venugopalan2015sequence} model, they use RNNs both in encoder and decoder, as shown in Figure \ref{fig:s2vt}. Yet they share parameters between encoder and decoder.
+
+Here we implement an RNN encoder model, but we separate encoder and decoder, i.e. do not share parameters between encoder and decoder RNN. We use two-layer LSTM as encoder and input frame features in each time step, and one-layer LSTM as decoder to generate caption. The model is shown in Figure \ref{fig:rnnenc}.
+
 \paragraph{Stacked LSTM}
 As proposed in \cite{pan2015hierarchical}, we can use multiple layers LSTM to extract long-term temporal structure of a video. To verify its feasibility, we implement a model shown in Figure \ref{fig:stack}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=15cm]{resources/ts1.png}
+\caption{General encoder for video representation}
+\label{fig:ts1}
+\end{figure}
 
 \paragraph{Encoder with temporal segmentation}
 We also propose a temporal segmentation layer shown in \autoref{fig:ts1} and \autoref{fig:ts2}. As pointed out in introduction section, videos in the wild always have several sceneries. To better handle long untrimmed video and extract their temporal structure, we attempt to divide frames into some groups and get a fixed representation for each group. The basic idea of temporal segmentation pipeline is as follows:
@@ -192,14 +257,7 @@ The model use other segmentation model to provide ground truth. Thus it transfer
 
 We have test this model on action recognition task and find it can improve the performance on UCF101 \cite{Soomro2012UCF101}. (This work is done by another group mate.) Currently we are conducting experiment on video captioning task.
 
-\begin{figure}
-\centering
-\includegraphics[width=15cm]{resources/ts1.png}
-\caption{General encoder for video representation}
-\label{fig:ts1}
-\end{figure}
-
-\begin{figure}
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=15cm]{resources/ts2.png}
 \caption{Encoder with temporal segmentation}
@@ -232,14 +290,14 @@ Note that attention based model only achieve equal performance with mean pooling
 \paragraph{Qualitative analysis}
 We visualize the attention model to see what the model learned. As shown in \autoref{fig:att1} and \autoref{fig:att2}, different frames are attached with different range of weights.This suggest that the attention model has learned to differentiate between those frames.
 
-\begin{figure}
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=14cm]{resources/att1.png}
 \caption{Attention visualize for different frames. In this video, similar frames are given similar weights, thus the model learn to differentiate between those frames.}
 \label{fig:att1}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=14cm]{resources/att2.png}
 \caption{Attention visualize for different frames, another example}
@@ -248,7 +306,7 @@ We visualize the attention model to see what the model learned. As shown in \aut
 
 As shown in \autoref{fig:att3}, the attention model may also change the weight according to the word it is generating.
 
-\begin{figure}
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=14cm]{resources/att3.png}
 \caption{Attention visualize showing changes for generating different words. When generating \lq{}\lq{}a band is performing\rq{}\rq{}, the model attend more on the latter four frames, which demonstrate the whole scenery of performing. When generating \lq{}\lq{}a song\rq{}\rq{}, the model attend more on the former two frames, which demonstrate a person singing something.}
@@ -259,20 +317,20 @@ As shown in \autoref{fig:att3}, the attention model may also change the weight a
 \subsection{Image captioning with RNNs}
 Automatically generating a natural language description of an image, a problem known as image captioning, has recently received a lot of attention in Computer Vision. The problem is interesting not only because it has important practical applications, such as helping visually impaired people see, but also because it is regarded as a grand challenge for image understanding which is a core problem in Computer Vision. The first attempt of visual to text translation using RNNs was seen in the work of image captioning \cite{Mao2014Deep,Vinyals2015Show} which can be treated as a special case of video captioning when each video has a single frame and no temporal structure. This is inspired by the success of using encoder-decoder framework in neural machine translation (NMT) task \cite{cho2014learning}. From then on, there are many attempt on image caption generation. \cite{xu2015show} use attention mechanism on image captioning task, also inspired by attention mechanism on NMT \cite{bahdanau2014neural}. \cite{Jia2015Guiding} use semantic information as guidance to train the decoder. They calculate the correlation between image and its description using canonical correlation analysis. \cite{You2016Image} explore the structure of language and combine image-to-text embedding and text-to-image embedding together. They introduce a feedback in general encoder-decoder framework.
 
-\subsection{Video captioning with RNNs}
-Early work of video captioning \cite{venugopalan2014translating} based on RNNs extends the image captioning methods by simply average pooling the video frames. However, this strategy works only for short video clips where there is only one major event, usually appearing in one video shot from the beginning to the end. To avoid this issue, more sophisticated ways of encoding video features were proposed in later work, using either a recurrent encoder \cite{donahue2015long,venugopalan2015sequence,xu2015multi} or an attention model \cite{yao2015describing}. Also some recent work attempt to extract long-term temporal structure of a video. \cite{pan2015hierarchical} use a hierarchical RNN model to summarize video feature in different time scale. \cite{yu2015video} proposes a model to generate paragraph description for long video.
-
-\section{Web interface}
-During this summer, I'm also working on the video to text website\footnote{\url{http://www.videototext.net/}}. The website work flow is shown in \autoref{fig:web}. The website is developed using Flask and runs on Apache http server. It also use Celery to provide task pipeline and use MySQL database to store suggested caption. The interface is shown in \autoref{fig:int}.
-
-\begin{figure}
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=8cm]{resources/web.png}
 \caption{Website work flow}
 \label{fig:web}
 \end{figure}
 
-\begin{figure}
+\subsection{Video captioning with RNNs}
+Early work of video captioning \cite{venugopalan2014translating} based on RNNs extends the image captioning methods by simply average pooling the video frames. However, this strategy works only for short video clips where there is only one major event, usually appearing in one video shot from the beginning to the end. To avoid this issue, more sophisticated ways of encoding video features were proposed in later work, using either a recurrent encoder \cite{donahue2015long,venugopalan2015sequence,xu2015multi} or an attention model \cite{yao2015describing}. Also some recent work attempt to extract long-term temporal structure of a video. \cite{pan2015hierarchical} use a hierarchical RNN model to summarize video feature in different time scale. \cite{yu2015video} proposes a model to generate paragraph description for long video.
+
+\section{Web interface}
+During this summer, I'm also working on the video to text website\footnote{\url{http://www.videototext.net/}}. The website work flow is shown in \autoref{fig:web}. The website is developed using Flask and runs on Apache http server. It also use Celery to provide task pipeline and use MySQL database to store suggested caption. The interface is shown in \autoref{fig:int}.
+
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=8cm]{resources/int.png}
 \caption{Website work flow}
