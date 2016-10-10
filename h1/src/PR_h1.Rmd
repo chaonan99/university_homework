@@ -1,0 +1,77 @@
+---
+title: "Pattern Recognition Homework Assignment 1"
+author: "Haonan Chen"
+date: "2016/10/10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Training
+### Data prepocessing
+```{r, message=FALSE}
+library("mclust")
+dat1 <- read.table("PR_DATA02.txt",fileEncoding="UCS-2LE")
+dat2 <- read.table("dataset1.txt")
+names(dat1) <- c("height","weight","sex")
+names(dat2) <- c("height","weight","sex")
+dat2[dat2$sex=="f",3]="F"
+dat2 <- droplevels(dat2)
+dat1.d <- dat1[,1:2]
+dat2.d <- dat2[,1:2]
+```
+
+### Data summary
+```{r}
+summary(dat1)
+summary(dat2)
+```
+```{r, echo=FALSE}
+clPairs(dat1.d, dat1$sex)
+clPairs(dat2.d, dat2$sex)
+```
+
+### Parameter estimation
+```{r, echo = FALSE}
+dat1.M=dat1.d[dat1$sex=="M",]
+dat2.M=dat2.d[dat2$sex=="M",]
+dat1.F=dat1.d[dat1$sex=="F",]
+dat2.F=dat2.d[dat2$sex=="F",]
+dat1.M.mvn=mvn("XXX",dat1.M)
+dat2.M.mvn=mvn("XXX",dat2.M)
+dat1.F.mvn=mvn("XXX",dat1.F)
+dat2.F.mvn=mvn("XXX",dat2.F)
+dat1.M.mean =dat1.M.mvn$parameters$mean
+dat1.M.cor  =dat1.M.mvn$parameters$variance$Sigma
+dat1.F.mean =dat1.F.mvn$parameters$mean
+dat1.F.cor  =dat1.F.mvn$parameters$variance$Sigma
+dat2.M.mean =dat2.M.mvn$parameters$mean
+dat2.M.cor  =dat2.M.mvn$parameters$variance$Sigma
+dat2.F.mean =dat2.F.mvn$parameters$mean
+dat2.F.cor  =dat2.F.mvn$parameters$variance$Sigma
+```
+
+```{r}
+dat1.M.mean
+dat1.M.cor
+dat1.F.mean
+dat1.F.cor
+dat2.M.mean
+dat2.M.cor
+dat2.F.mean
+dat2.F.cor
+```
+
+### Discriminant function
+```{r}
+dat1.W<-(solve(dat1.F.cor)-solve(dat1.M.cor))/2
+dat2.W<-(solve(dat2.F.cor)-solve(dat2.M.cor))/2
+dat1.M.w<--(mahalanobis(c(0,0),dat1.M.mean,dat1.M.cor)+log(det(dat1.M.cor)))/2+log(0.5)
+dat1.F.w<--(mahalanobis(c(0,0),dat1.F.mean,dat1.F.cor)+log(det(dat1.F.cor)))/2+log(0.5)
+dat1.w<-dat1.M.w-dat1.F.w
+dat2.M.w<--(mahalanobis(c(0,0),dat2.M.mean,dat2.M.cor)+log(det(dat2.M.cor)))/2+log(0.5)
+dat2.F.w<--(mahalanobis(c(0,0),dat2.F.mean,dat2.F.cor)+log(det(dat2.F.cor)))/2+log(0.5)
+dat2.w<-dat2.M.w-dat2.F.w
+```

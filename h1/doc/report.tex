@@ -1,0 +1,183 @@
+\input{header}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%封面与目录%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+\begin{center}
+% Upper part of the page
+\includegraphics[width=0.25\textwidth]{./logo.jpg}\\[1cm]
+\textsc{\LARGE Department of Automation}\\[1.5cm]
+\fs{\Large 模式识别基础第一次作业}\\[0.5cm]
+% Title
+\hrulefill
+\\[0.8cm]{\centering \huge \hei 用身高体重数据进行性别分类的实验（一）}\\[0.4cm]
+\hrulefill
+\\[4cm]
+
+% Author and supervisor
+\begin{tabbing}       %tabbing  列表
+
+ \hspace*{5cm} \= \hspace{2.6cm} \= \kill
+ % \=     in tabbing environment, sets a tab stop
+ % \kill  in a\tabbing environment, deletes previous line so tabs can be set without outputting text.
+ % \>     in tabbing environment is a forward tab.
+
+\>{\fs\sihao\textbf {班\hspace{1cm}级 \ \ ：}}\>  {\centering\fs\sihao\textbf{~~~~~~~~~自~~3~2}} \\
+\\
+\>{\fs\sihao\textbf {姓\hspace{1cm}名 \ \ ：}}\>  {\centering\fs\sihao\textbf{~~~~~~~~陈~昊~楠}}\\
+\\
+\>{\fs\sihao\textbf {学\hspace{1cm}号 \ \ ：}}\>  {\centering\fs\sihao\textbf{~~~~~~2013011449}}\\
+\\
+\>{\fs\sihao\textbf {授课教师 \ \ ：}}\>  {\centering\fs\sihao\textbf{~~~~~~~~张~学~工}} \\
+
+\end{tabbing}
+\vfill
+{\large \today}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%正文部分%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{实验内容}
+收集至少50 个人的性别、身高、体重等数据，结合给定的数据集，采用身高和体重为特征进行性别分类。根据贝叶斯决策原理，使用最小错误率贝叶斯分类器进行二分类任务。具体步骤如下：
+
+\begin{itemize}
+	\item 在正态分布假设下估计概率密度，自行确定先验概率，建立最小错误率贝叶斯分类器，写出得到的决策规则；计算训练错误率和在 dataset1.txt 上的测试错误率；
+	\item 自行给出一个决策表，采用最小风险贝叶斯决策重复上面的实验；
+	\item 用题中得到的似然比或对数似然比为分类指标，粗略画出ROC 曲线，体会两类错误率的概念和与最小风险决策的关系；
+	\item 交换训练集和测试集，重复上述步骤 1~3。
+\end{itemize}
+
+\section{实验方法}
+
+
+\section{数据说明}
+	\paragraph{采集方式} 使用线上问卷平台“问卷星”发放问卷。问卷链接：\url{https://www.sojump.hk/jq/9817519.aspx}。
+	\paragraph{小组成员名单} 安亮/\textbf{陈昊楠}/陈炜祥/冯乔俊/刘浪/陆欣然/牛家禾/欧阳佳弘/孙世杰/万琳莉/王柏然/王梓言/吴迪/尹彦歆
+	\paragraph{采集结果} 总共收集数据356 份，其中有效数据344 份，无效数据12 份。该数据经过\textbf{冯乔俊}同学的预处理，处理方法为：
+	\begin{itemize}
+		\item 女性，填写体重值80 以上，体重值统一除以2；
+		\item 男性，填写体重值100 以上，体重值统一除以2；
+		\item 男性，填写体重值100 以上，且身高值170以下，体重值统一除以2。
+	\end{itemize}
+	由此得到有效数据344 份。女性F 共172 份，男性M 共172 份。
+
+\section{实验结果}
+\subsection{最小错误率决策}
+	\paragraph{先验概率估计} 此处应该估计实际情况中男生、女生的比例。由于不知道测试数据的来源，此处认为男生女生各占一半，即两类的先验概率为：
+	\begin{equation}
+		P(\omega_1)=P(\omega_2)=1/2
+	\end{equation}
+	\paragraph{概率密度估计} 假设身高、体重数据服从二维正态分布，从数据分布情况看，不能假设身高体重独立，亦不能假设男、女的身高体重分布具有相同的协方差矩阵，因此分别当做任意的正态分布估计参数。采集数据的估计结果为
+	\begin{align}
+		\mu_1 &= [175.9297,68.5314]\\
+		\Sigma_1 &= \begin{bmatrix}
+		32.02767 & 25.56843 \\
+		25.56843 & 101.24157
+		\end{bmatrix}\\
+		\mu_2 &= [163.54651,52.42209]\\
+		\Sigma_2 &= \begin{bmatrix}
+		26.42226 & 12.93734 \\
+		12.93734 & 30.61347
+		\end{bmatrix}
+	\end{align}
+	提供数据的估计结果为
+	\begin{align}
+		\mu_1 &= [174.996,67.234]\\
+		\Sigma_1 &= \begin{bmatrix}
+		28.31398 & 22.64894 \\
+		22.64894 & 97.98624
+		\end{bmatrix}\\
+		\mu_2 &= [162.32051,51.40385]\\
+		\Sigma_2 &= \begin{bmatrix}
+		20.910092 & 8.300049 \\
+		8.300049 & 26.776011
+		\end{bmatrix}
+	\end{align}
+	\paragraph{判别函数与决策规则} 在多维正态分布假设下，采用对数形式判别函数：
+	\begin{equation}
+		g_i(\mathbf{x})=-\frac{1}{2}(\mathbf{x}-\mu_i)^\mathbf{T}\Sigma^{-1}_i(\mathbf{x}-\mu_i)-\frac{d}{2}\ln 2\pi-\frac{1}{2}\ln|\Sigma_i|+\ln P(\omega_i)
+	\end{equation}
+	其中$i=1,2$分别表示男、女。将身高、体重向量带入两个判别函数，决策规则为
+	\begin{equation}
+		\text{若} \quad g_1(\mathbf{x})-g_2(\mathbf{x}) \gtrless 0 \text{，则}\quad
+		\mathbf{x} \in \begin{dcases}
+		\omega_1\\
+		\omega_2
+		\end{dcases}
+	\end{equation}
+	\paragraph{错误率} 表\ref{tab:minerror}为分别将采集数据、提供的数据作为训练、测试集并互换后错误率的结果。
+	\begin{table}
+		\centering
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			训练集 & 测试集 & 训练集错误率 & 测试集错误率 \\
+			\hline
+			PR\_DATA02.txt & dataset1.txt & 9.8837\% & 12.5000\% \\
+			dataset1.txt & PR\_DATA02.txt & 6.4024\% & 13.9535\% \\
+			\hline
+		\end{tabular}
+		\caption{最小错误率决策结果}
+		\label{tab:minerror}
+	\end{table}
+
+\subsection{最小风险决策}
+\paragraph{决策表} 设决策与状态相同时损失为0，此时仅$\lambda_{12}$与$\lambda_{21}$的比值影响决策结果。因此固定$\lambda_{21}=1$，改变$\lambda_{12}$，即采用表\ref{tab:lossform}所示的决策表。
+\begin{table}
+	\centering
+	\begin{tabular}{c|cc}
+	\hline
+	& $\omega_1$ & $\omega_2$ \\
+	\hline
+	$\alpha_1$ & 0 & $\lambda_{12}$\\
+	$\alpha_2$ & 1 & 0 \\
+	\hline
+	\end{tabular}
+	\label{tab:lossform}
+	\caption{决策表}
+\end{table}
+\paragraph{判别函数与决策规则} 仍然采用上一节的判别函数，此时决策规则变为
+\begin{equation}
+	\text{若} \quad \frac{g_1(\mathbf{x})}{g_2(\mathbf{x})} \gtrless \lambda_{12} \text{，则}\quad
+	\mathbf{x} \in \begin{dcases}
+	\omega_1\\
+	\omega_2
+	\end{dcases}
+\end{equation}
+\paragraph{错误率} 表\ref{tab:minrisk}为分别将采集数据、提供的数据作为训练、测试集并互换后错误率的结果。
+\begin{table}
+	\centering
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		& \multicolumn{2}{|c|}{采集数据作为训练集} & \multicolumn{2}{|c|}{采集数据作为测试集} \\
+		\hline
+		$\lambda_{12}$ & 训练集错误率 & 测试集错误率 & 训练集错误率 & 测试集错误率 \\
+		\hline
+		0.001 & & & & \\
+		0.003 & & & & \\
+		0.01 & & & & \\
+		0.03 & & & & \\
+		0.1 & & & & \\
+		0.3 & & & & \\
+		1 & & & & \\
+		3 & & & & \\
+		10 & & & & \\
+		30 & & & & \\
+		\hline
+	\end{tabular}
+	\caption{最小风险决策结果}
+	\label{tab:minrisk}
+\end{table}
+\section{分析与体会}
+
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=11cm]{logo.jpg}
+% \caption{全桥测试电路}
+% \label{fig:fullarm}
+% \end{figure}
+
+\end{document}
