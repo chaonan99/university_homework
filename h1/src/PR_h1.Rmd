@@ -65,13 +65,34 @@ dat2.F.cor
 ```
 
 ### Discriminant function
+Use log discriminant function.
+\begin{align}
+
+\end{align}
 ```{r}
-dat1.W<-(solve(dat1.F.cor)-solve(dat1.M.cor))/2
-dat2.W<-(solve(dat2.F.cor)-solve(dat2.M.cor))/2
-dat1.M.w<--(mahalanobis(c(0,0),dat1.M.mean,dat1.M.cor)+log(det(dat1.M.cor)))/2+log(0.5)
-dat1.F.w<--(mahalanobis(c(0,0),dat1.F.mean,dat1.F.cor)+log(det(dat1.F.cor)))/2+log(0.5)
-dat1.w<-dat1.M.w-dat1.F.w
-dat2.M.w<--(mahalanobis(c(0,0),dat2.M.mean,dat2.M.cor)+log(det(dat2.M.cor)))/2+log(0.5)
-dat2.F.w<--(mahalanobis(c(0,0),dat2.F.mean,dat2.F.cor)+log(det(dat2.F.cor)))/2+log(0.5)
-dat2.w<-dat2.M.w-dat2.F.w
+dat1.w2<-(solve(dat1.F.cor)-solve(dat1.M.cor))/2
+dat2.w2<-(solve(dat2.F.cor)-solve(dat2.M.cor))/2
+dat1.w1<-solve(dat1.M.cor)%*%dat1.M.mean-solve(dat1.F.cor)%*%dat1.F.mean
+dat2.w1<-solve(dat2.M.cor)%*%dat2.M.mean-solve(dat2.F.cor)%*%dat2.F.mean
+dat1.w0<-(mahalanobis(c(0,0),dat1.F.mean,dat1.F.cor)+log(det(dat1.F.cor)))/2+log(0.5)-
+	(mahalanobis(c(0,0),dat1.M.mean,dat1.M.cor)+log(det(dat1.M.cor)))/2-log(0.5)
+dat2.w0<-(mahalanobis(c(0,0),dat2.F.mean,dat2.F.cor)+log(det(dat2.F.cor)))/2+log(0.5)-
+	(mahalanobis(c(0,0),dat2.M.mean,dat2.M.cor)+log(det(dat2.M.cor)))/2-log(0.5)
+```
+
+```{r, echo=FALSE}
+dat1.train.res<-rowSums(as.matrix(dat1.d)%*%as.matrix(dat1.w2)*dat1.d)+
+	as.matrix(dat1.d)%*%as.matrix(dat1.w1)+dat1.w0
+dat1.train.label<-dat1$sex == "M"
+dat1.train.err<-sum((dat1.train.res>0)!=dat1.train.label)/nrow(dat1)
+dat2.test.res<-rowSums(as.matrix(dat2.d)%*%as.matrix(dat1.w2)*dat2.d)+
+	as.matrix(dat2.d)%*%as.matrix(dat1.w1)+dat1.w0
+dat2.test.label<-dat2$sex == "M"
+dat2.test.err<-sum((dat2.test.res>0)!=dat2.test.label)/nrow(dat2)
+```
+
+Use `dat1` as training set, training error on `dat1` and test error on `dat2` are
+```{r}
+dat1.train.err
+dat2.test.err
 ```

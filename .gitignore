@@ -2,6 +2,7 @@
 *.sublime-project
 *.sublime-workspace
 *.html
+.Rhistory
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
