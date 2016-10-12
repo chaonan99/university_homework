@@ -12,7 +12,7 @@
 \begin{titlepage}
 \begin{center}
 % Upper part of the page
-\includegraphics[width=0.25\textwidth]{./logo.jpg}\\[1cm]
+\includegraphics[width=0.25\textwidth]{resource/logo.jpg}\\[1cm]
 \textsc{\LARGE Department of Automation}\\[1.5cm]
 \fs{\Large 模式识别基础第一次作业}\\[0.5cm]
 % Title
@@ -55,14 +55,11 @@
 	\item 在正态分布假设下估计概率密度，自行确定先验概率，建立最小错误率贝叶斯分类器，写出得到的决策规则；计算训练错误率和在 dataset1.txt 上的测试错误率；
 	\item 自行给出一个决策表，采用最小风险贝叶斯决策重复上面的实验；
 	\item 用题中得到的似然比或对数似然比为分类指标，粗略画出ROC 曲线，体会两类错误率的概念和与最小风险决策的关系；
-	\item 交换训练集和测试集，重复上述步骤 1~3。
+	\item 交换训练集和测试集，重复上述步骤 1\~3。
 \end{itemize}
 
-\section{实验方法}
-
-
-\section{数据说明}
-	\paragraph{采集方式} 使用线上问卷平台“问卷星”发放问卷。问卷链接：\url{https://www.sojump.hk/jq/9817519.aspx}。
+\section{实验方法与数据说明}
+	\paragraph{采集方法} 使用线上问卷平台“问卷星”发放问卷。问卷链接：\url{https://www.sojump.hk/jq/9817519.aspx}。
 	\paragraph{小组成员名单} 安亮/\textbf{陈昊楠}/陈炜祥/冯乔俊/刘浪/陆欣然/牛家禾/欧阳佳弘/孙世杰/万琳莉/王柏然/王梓言/吴迪/尹彦歆
 	\paragraph{采集结果} 总共收集数据356 份，其中有效数据344 份，无效数据12 份。该数据经过\textbf{冯乔俊}同学的预处理，处理方法为：
 	\begin{itemize}
@@ -71,8 +68,9 @@
 		\item 男性，填写体重值100 以上，且身高值170以下，体重值统一除以2。
 	\end{itemize}
 	由此得到有效数据344 份。女性F 共172 份，男性M 共172 份。
+	\paragraph{程序说明} 这次作业我使用{\ttfamily R} 语言编写，并使用{\ttfamily Knit}包解析{\ttfamily RMarkdown}，生成{\ttfamily html}格式的{\ttfamily Notebook}。由于{\ttfamily RMarkdown}对中文需要另外编码，产生的代码文件可能在编辑器中无法阅读，因此程序源码使用了英文。并且由于生成{\ttfamily pdf}文件排版不佳，因此提供{\ttfamily html}格式以便阅读。可以在浏览器中打开查看。
 
-\section{实验结果}
+\section{实验内容与结果}
 \subsection{最小错误率决策}
 	\paragraph{先验概率估计} 此处应该估计实际情况中男生、女生的比例。由于不知道测试数据的来源，此处认为男生女生各占一半，即两类的先验概率为：
 	\begin{equation}
@@ -105,10 +103,13 @@
 		\end{bmatrix}
 	\end{align}
 	\paragraph{判别函数与决策规则} 在多维正态分布假设下，采用对数形式判别函数：
-	\begin{align*}
-		g_i(\mathbf{x})&=-\frac{1}{2}(\mathbf{x}-\mu_i)^\mathbf{T}\Sigma^{-1}_i(\mathbf{x}-\mu_i)-\frac{d}{2}\ln 2\pi-\frac{1}{2}\ln|\Sigma_i|+\ln P(\omega_i) \\
-		{}&=\mathbf{x^TW}_i\mathbf{x}+\mathbf{w^T}_i\mathbf{x}+\smallW_{i0} \label{eq:discrim}
-	\end{align*}
+	\begin{equation}
+		\begin{split}
+			g_i(\mathbf{x})&=-\frac{1}{2}(\mathbf{x}-\mu_i)^\mathbf{T}\Sigma^{-1}_i(\mathbf{x}-\mu_i)-\frac{d}{2}\ln 2\pi-\frac{1}{2}\ln|\Sigma_i|+\ln P(\omega_i) \\
+			{}&=\mathbf{x^TW}_i\mathbf{x}+\mathbf{w^T}_i\mathbf{x}+\smallW_{i0}
+		\end{split}
+		\label{eq:discrim}
+	\end{equation}
 	其中$i=1,2$分别表示男、女，
 	\begin{align}
 		\mathbf{W}_i&=-\frac12\Sigma_i^{-1}\\
@@ -156,6 +157,7 @@
 \end{table}
 \paragraph{判别函数与决策规则} 仍然采用上一节的判别函数，此时决策规则变为
 \begin{equation}
+\label{eq:risk}
 	\text{若} \quad g_1(\mathbf{x})-g_2(\mathbf{x}) \gtrless \ln\lambda_{12} \text{，则}\quad
 	\mathbf{x} \in \begin{dcases}
 	\omega_1\\
@@ -190,14 +192,28 @@
 \end{table}
 
 \subsection{ROC曲线}
+ROC曲线是模型的假阳性（False positive, FP）和真阳性（True positive, TP）的关系曲线，可以反映模型分类的能力。将风险决策中的$\lambda_{12}$从0至无穷大连续变化，可以得到一组$TP~FP$的关系曲线，即为ROC曲线。以采集数据为训练集，在提供数据上的ROC曲线如图\ref{fig:roc1}；以提供数据为训练集，在采集数据上的ROC曲线如图\ref{fig:roc2}。
+\begin{figure}[htbp]
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=3in]{resource/roc1.png}
+\caption{ROC曲线，提供数据上}
+\label{fig:roc1}
+\end{minipage}
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=3in]{resource/roc1.png}
+\caption{ROC曲线，采集数据上}
+\label{fig:roc2}
+\end{minipage}
+\end{figure}
+
+在实际计算ROC曲线时，设$g(\mathbf{x})=g_1(\mathbf{x})-g_2(\mathbf{x})$，将测试集样本按照$g(\mathbf{x})$的大小排序，如果实际标签为M则上移一格，为F则右移一格，即可得到ROC曲线。由风险决策的决策规则式\ref{eq:risk}可知，这与连续变化$\lambda$得到的曲线是一致的。
 
 \section{分析与体会}
-
-% \begin{figure}[htbp]
-% \centering
-% \includegraphics[width=11cm]{logo.jpg}
-% \caption{全桥测试电路}
-% \label{fig:fullarm}
-% \end{figure}
+\begin{itemize}
+	\item 实验中对先验概率的处理是固定为$0.5$。实验中我们对比了直接计算判别函数求取分类和{\ttfamily R}程序包{\ttfamily mclust}中的做法。我们发现，在使用我们采集到的数据训练时，训练准确率和测试准确率都是吻合的，而采用提供的数据进行训练时就不吻合了。这是因为{\ttfamily mclust}包中使用训练数据的分布估计了先验概率，与我们固定为$0.5$的做法不同。但我们采集的数据恰好先验概率就是$0.5$，因此前一个实验结果相同。然而由于提供的数据集分布有很大偏差，{\ttfamily mclust}包的方法能够在训练集上取得更低的错误率，但在测试集上的错误率要高于我们的方法。在报告中我们只展现了我们方法的错误率，更详细的结果参见程序。
+	\item 由于我们组人数众多，我帮助转发了问卷就获得了大量的数据，这说明人多力量大。我十分感谢这些同学对我的帮助，没有他们我就无法完成这次作业！
+\end{itemize}
 
 \end{document}
