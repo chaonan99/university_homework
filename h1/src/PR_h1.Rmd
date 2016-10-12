@@ -2,15 +2,18 @@
 title: "Pattern Recognition Homework Assignment 1"
 author: "Haonan Chen"
 date: "2016/10/10"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Training
-### Data prepocessing
+# Minimum Error Rate Classification
+## Data prepocessing
 ```{r, message=FALSE}
 library("mclust")
 dat1 <- read.table("PR_DATA02.txt",fileEncoding="UCS-2LE")
@@ -23,7 +26,7 @@ dat1.d <- dat1[,1:2]
 dat2.d <- dat2[,1:2]
 ```
 
-### Data summary
+## Data summary
 ```{r}
 summary(dat1)
 summary(dat2)
@@ -33,7 +36,7 @@ clPairs(dat1.d, dat1$sex)
 clPairs(dat2.d, dat2$sex)
 ```
 
-### Parameter estimation
+## Parameter estimation
 ```{r, echo = FALSE}
 dat1.M=dat1.d[dat1$sex=="M",]
 dat2.M=dat2.d[dat2$sex=="M",]
@@ -64,11 +67,14 @@ dat2.F.mean
 dat2.F.cor
 ```
 
-### Discriminant function
+## Discriminant function
 Use log discriminant function.
-\begin{align}
-
-\end{align}
+$$g_i(\mathbf{x})=\mathbf{x^TW}_i\mathbf{x}+\mathbf{w^T}_i\mathbf{x}+\mathcal{w}_{i0}$$
+where,
+$$\mathbf{W}_i=-\frac12\Sigma_i^{-1}$$
+$$\mathbf{w}_i=\Sigma_i^{-1}\mu_i$$
+$$\mathcal{w}_{i0}=-\frac12\mu_i^\mathbf{T}\Sigma_i^{-1}\mu_i-\frac12\ln|\Sigma_i|+\ln P(\omega_i)$$
+In the implementation below, `dati.w2`$=\mathbf{W}_1-\mathbf{W}_2$, `dati.w1`$=\mathbf{w}_1-\mathbf{w}_2$ and `dati.w0`$=\mathcal{w}_{10}-\mathcal{w}_{20}$
 ```{r}
 dat1.w2<-(solve(dat1.F.cor)-solve(dat1.M.cor))/2
 dat2.w2<-(solve(dat2.F.cor)-solve(dat2.M.cor))/2
@@ -80,19 +86,91 @@ dat2.w0<-(mahalanobis(c(0,0),dat2.F.mean,dat2.F.cor)+log(det(dat2.F.cor)))/2+log
 	(mahalanobis(c(0,0),dat2.M.mean,dat2.M.cor)+log(det(dat2.M.cor)))/2-log(0.5)
 ```
 
+## Result
+
+### dat1 as training set
+
 ```{r, echo=FALSE}
 dat1.train.res<-rowSums(as.matrix(dat1.d)%*%as.matrix(dat1.w2)*dat1.d)+
 	as.matrix(dat1.d)%*%as.matrix(dat1.w1)+dat1.w0
-dat1.train.label<-dat1$sex == "M"
-dat1.train.err<-sum((dat1.train.res>0)!=dat1.train.label)/nrow(dat1)
+dat1.label<-dat1$sex == "M"
+dat1.train.err<-sum((dat1.train.res>0)!=dat1.label)/nrow(dat1)
 dat2.test.res<-rowSums(as.matrix(dat2.d)%*%as.matrix(dat1.w2)*dat2.d)+
 	as.matrix(dat2.d)%*%as.matrix(dat1.w1)+dat1.w0
-dat2.test.label<-dat2$sex == "M"
-dat2.test.err<-sum((dat2.test.res>0)!=dat2.test.label)/nrow(dat2)
+dat2.label<-dat2$sex == "M"
+dat2.test.err<-sum((dat2.test.res>0)!=dat2.label)/nrow(dat2)
 ```
 
 Use `dat1` as training set, training error on `dat1` and test error on `dat2` are
 ```{r}
 dat1.train.err
 dat2.test.err
+```
+
+### Compare with MclustDA
+Here we compare our implementation with the result from `mclust` library.
+```{r}
+dat1.mod = MclustDA(dat1.d, dat1$sex)
+summary(dat1.mod)
+```
+
+We can see that our training error is exactly the same with the result in the library. This demonstrate that our discriminant function is correct. The classification and training error graph is as follows.
+```{r,echo=FALSE}
+plot(dat1.mod,what="c")
+plot(dat1.mod,what="e")
+```
+
+We can than use `mclust` library to do prediction on `dat2`. The result is as follows
+```{r}
+dat2.test<-predict(dat1.mod,dat2.d)
+sum(dat2.test$classification!=dat2$sex)/nrow(dat2)
+```
+
+This is the same as our result.
+
+### dat2 as training set
+```{r, echo=FALSE}
+dat2.train.res<-rowSums(as.matrix(dat2.d)%*%as.matrix(dat2.w2)*dat2.d)+
+	as.matrix(dat2.d)%*%as.matrix(dat2.w1)+dat2.w0
+dat2.train.err<-sum((dat2.train.res>0)!=dat2.label)/nrow(dat2)
+dat1.test.res<-rowSums(as.matrix(dat1.d)%*%as.matrix(dat2.w2)*dat1.d)+
+	as.matrix(dat1.d)%*%as.matrix(dat2.w1)+dat2.w0
+dat1.test.err<-sum((dat1.test.res>0)!=dat1.label)/nrow(dat1)
+```
+
+Use `dat2` as training set, training error on `dat2` and test error on `dat1` are
+```{r}
+dat2.train.err
+dat1.test.err
+```
+
+### Compare with MclustDA
+Again we compare our result with that from `mclust` library.
+```{r}
+dat2.mod = MclustDA(dat2.d, dat2$sex)
+summary(dat2.mod)
+dat1.test<-predict(dat2.mod,dat1.d)
+sum(dat1.test$classification!=dat1$sex)/nrow(dat1)
+```
+
+We can see that the result is different at this time. This is because the algorithm in `mclust` library estimate the priori probability from the training set. But we use a fixed priori of `1/2`. As `dat2` is biased to `Male`, we can see that the training error of our method is higher but the test error is lower compared with `MclustDA`. This is consistant with our intuition.
+
+In the report, we only report the error of our method.
+
+# Minimum Risk Classification
+```{r}
+dat1.train.rie<-c()
+dat2.test.rie<-c()
+dat2.train.rie<-c()
+dat1.test.rie<-c()
+for (lambda in c(0.001,0.003,0.01,0.03,0.1,0.3,1,3,10,30,100,300)){
+	dat1.train.rie<-c(dat1.train.rie,sum((dat1.train.res>log(lambda))!=dat1.label)/nrow(dat1))
+	dat2.test.rie<-c(dat2.test.rie,sum((dat2.test.res>log(lambda))!=dat2.label)/nrow(dat2))
+	dat2.train.rie<-c(dat2.train.rie,sum((dat2.train.res>log(lambda))!=dat2.label)/nrow(dat2))
+	dat1.test.rie<-c(dat1.test.rie,sum((dat1.test.res>log(lambda))!=dat1.label)/nrow(dat1))
+}
+dat1.train.rie
+dat2.test.rie
+dat2.train.rie
+dat1.test.rie
 ```
