@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Data prepocessing
 ```{r, message=FALSE}
 library("mclust")
+library("pROC")
 dat1 <- read.table("PR_DATA02.txt",fileEncoding="UCS-2LE")
 dat2 <- read.table("dataset1.txt")
 names(dat1) <- c("height","weight","sex")
@@ -158,19 +159,44 @@ We can see that the result is different at this time. This is because the algori
 In the report, we only report the error of our method.
 
 # Minimum Risk Classification
-```{r}
-dat1.train.rie<-c()
-dat2.test.rie<-c()
-dat2.train.rie<-c()
-dat1.test.rie<-c()
+The decision boundary is described in the report.
+
+```{r, echo=FALSE}
+dat1.train.risk<-c()
+dat2.test.risk<-c()
+dat2.train.risk<-c()
+dat1.test.risk<-c()
 for (lambda in c(0.001,0.003,0.01,0.03,0.1,0.3,1,3,10,30,100,300)){
-	dat1.train.rie<-c(dat1.train.rie,sum((dat1.train.res>log(lambda))!=dat1.label)/nrow(dat1))
-	dat2.test.rie<-c(dat2.test.rie,sum((dat2.test.res>log(lambda))!=dat2.label)/nrow(dat2))
-	dat2.train.rie<-c(dat2.train.rie,sum((dat2.train.res>log(lambda))!=dat2.label)/nrow(dat2))
-	dat1.test.rie<-c(dat1.test.rie,sum((dat1.test.res>log(lambda))!=dat1.label)/nrow(dat1))
+	dat1.train.risk<-c(dat1.train.risk,sum((dat1.train.res>log(lambda))!=dat1.label)/nrow(dat1))
+	dat2.test.risk<-c(dat2.test.risk,sum((dat2.test.res>log(lambda))!=dat2.label)/nrow(dat2))
+	dat2.train.risk<-c(dat2.train.risk,sum((dat2.train.res>log(lambda))!=dat2.label)/nrow(dat2))
+	dat1.test.risk<-c(dat1.test.risk,sum((dat1.test.res>log(lambda))!=dat1.label)/nrow(dat1))
 }
-dat1.train.rie
-dat2.test.rie
-dat2.train.rie
-dat1.test.rie
+```
+
+List of train and test accuracy.
+```{r}
+dat1.train.risk
+dat2.test.risk
+dat2.train.risk
+dat1.test.risk
+```
+
+# ROC Curve
+```{r, echo=FALSE}
+dat2.test.comb <- do.call(rbind, Map(data.frame, score=dat2.test.res, class=dat2$sex))
+dat2.test.comb<-dat2.test.comb[with(dat2.test.comb,order(-dat2.test.comb$score)),]
+
+dat2.test.cum.X<-cumsum(dat2.test.comb$class=="F")/length(which(dat2$sex=="M"))
+dat2.test.cum.Y<-cumsum(dat2.test.comb$class=="M")/length(which(dat2$sex=="M"))
+plot(dat2.test.cum.X,dat2.test.cum.Y,pch=".",main="ROC curve on dat2 (trained on dat1)",xlab="False positive rate",ylab="True positive rate")
+lines(dat2.test.cum.X,dat2.test.cum.Y)
+
+dat1.test.comb <- do.call(rbind, Map(data.frame, score=dat1.test.res, class=dat1$sex))
+dat1.test.comb<-dat1.test.comb[with(dat1.test.comb,order(-dat1.test.comb$score)),]
+
+dat1.test.cum.X<-cumsum(dat1.test.comb$class=="F")/length(which(dat1$sex=="M"))
+dat1.test.cum.Y<-cumsum(dat1.test.comb$class=="M")/length(which(dat1$sex=="M"))
+plot(dat1.test.cum.X,dat1.test.cum.Y,pch=".",main="ROC curve on dat1 (trained on dat2)",xlab="False positive rate",ylab="True positive rate")
+lines(dat1.test.cum.X,dat1.test.cum.Y)
 ```
