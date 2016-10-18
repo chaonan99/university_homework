@@ -1,0 +1,57 @@
+\input{header}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%封面与目录%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+\begin{center}
+% Upper part of the page
+\includegraphics[width=0.25\textwidth]{resource/logo.jpg}\\[1cm]
+\textsc{\LARGE Department of Automation}\\[1.5cm]
+\fs{\Large 模式识别基础第二次作业}\\[0.5cm]
+% Title
+\hrulefill
+\\[0.8cm]{\centering \huge \hei 用身高体重数据进行性别分类的实验（二）}\\[0.4cm]
+\hrulefill
+\\[4cm]
+
+% Author and supervisor
+\begin{tabbing}       %tabbing  列表
+
+ \hspace*{5cm} \= \hspace{2.6cm} \= \kill
+ % \=     in tabbing environment, sets a tab stop
+ % \kill  in a\tabbing environment, deletes previous line so tabs can be set without outputting text.
+ % \>     in tabbing environment is a forward tab.
+
+\>{\fs\sihao\textbf {班\hspace{1cm}级 \ \ ：}}\>  {\centering\fs\sihao\textbf{~~~~~~~~~自~~3~2}} \\
+\\
+\>{\fs\sihao\textbf {姓\hspace{1cm}名 \ \ ：}}\>  {\centering\fs\sihao\textbf{~~~~~~~~陈~昊~楠}}\\
+\\
+\>{\fs\sihao\textbf {学\hspace{1cm}号 \ \ ：}}\>  {\centering\fs\sihao\textbf{~~~~~~2013011449}}\\
+\\
+\>{\fs\sihao\textbf {授课教师 \ \ ：}}\>  {\centering\fs\sihao\textbf{~~~~~~~~张~学~工}} \\
+
+\end{tabbing}
+\vfill
+{\large \today}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%正文部分%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{实验内容}
+\begin{enumerate}
+用dataset3 作为训练数据，用dataset4 作为测试数据，采用不同的特征、
+训练样本数、分类方法进行比较实验，观察、分析实验结果的异同。
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=11cm]{resource/logo.jpg}
+\caption{全桥测试电路}
+\label{fig:fullarm}
+\end{figure}
+
+\end{document}
