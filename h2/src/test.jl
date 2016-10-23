@@ -3,5 +3,8 @@ using DataFrames
 df_train = readtable("dataset3.txt", separator = '\t')
 df_test = readtable("dataset4.txt", separator = '\t')
 
-# close(df_train)
-# close(df_test)
+# Bayes: ? BayesNet http://nbviewer.jupyter.org/github/sisl/BayesNets.jl/blob/master/doc/BayesNets.ipynb
+#           http://distributionsjl.readthedocs.io/en/latest/
+# Fisher: https://github.com/remusao/LDA.jl
+# SVM: https://github.com/JuliaStats/SVM.jl
+# MLP: http://serhanaya.github.io/neural-networks-julia-implementation/
