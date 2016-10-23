@@ -41,11 +41,25 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%正文部分%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{实验内容}
+\section{实验内容及结果}
 \begin{enumerate}
-用dataset3 作为训练数据，用dataset4 作为测试数据，采用不同的特征、
-训练样本数、分类方法进行比较实验，观察、分析实验结果的异同。
+	\item 用 {\ttfamily dataset3} 作为训练数据，用 {\ttfamily dataset4} 作为测试数据，采用不同的特征、训练样本数、分类方法进行比较实验，观察、分析实验结果的异同。
+	\item 
 \end{enumerate}
+
+\section{分析与体会}
+
+
+\section{数据与方法}
+\subsection{随机采样方法}
+采用{\ttfamily sample}函数生成一定范围内不重复的随机整数。例如：
+\begin{lstlisting}
+	sample(1:size(df_train, 1), 10, replace = false)
+\end{lstlisting}
+函数具体说明参见 \url{http://statsbasejl.readthedocs.io/en/latest/sampling.html}。挑选出的样本参见源程序 \url{http://nbviewer.jupyter.org/github/chaonan99/PR_hw/blob/master/h2/src/h2.ipynb}。
+
+\subsection{程序说明}
+
 
 \begin{figure}[htbp]
 \centering
