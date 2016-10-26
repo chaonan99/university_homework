@@ -70,7 +70,7 @@
 
 \section{实验方法}
 \subsection{Bayes最小错误率分类}
-该方法假设男性、女性两类之内对所有特征服从多维正态分布。设两类的均值、协方差矩阵分别为$\mu_i,\Sigma_i\quad i=1,2$，则决策边界可按式\autoref{eq:bayes}计算：
+该方法假设男性、女性两类之内对所有特征服从多维正态分布。设两类的均值、协方差矩阵分别为$\mu_i,\Sigma_i\quad i=1,2$，则决策边界可按式\ref{eq:bayes}计算：
 \begin{equation}
 \label{eq:bayes}
 -\frac12[(x-\mu_i)^\mathbf{T}\Sigma_i^{-1}(x-\mu_i)-(x-\mu_j)^\mathbf{T}\Sigma_j^{-1}(x-\mu_j)]-\frac12\ln \frac{|\Sigma_i|}{|\Sigma_j|}+\ln\frac{P(\omega_i)}{P(\omega_j)}=0
