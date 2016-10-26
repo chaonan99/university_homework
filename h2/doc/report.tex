@@ -41,40 +41,97 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%正文部分%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{实验内容及结果}
+\section{实验内容}
 \begin{enumerate}
 	\item 用 {\ttfamily dataset3} 作为训练数据，用 {\ttfamily dataset4} 作为测试数据，采用不同的特征、训练样本数、分类方法进行比较实验，观察、分析实验结果的异同。
-	\item 
+	\begin{itemize}
+		\item 特征组合
+		\begin{enumerate}
+			\item 10个特征都用
+			\item 只用第3、5列特征
+		\end{enumerate}
+		\item 训练样本组合
+		\begin{enumerate}
+			\item 从dataset3 中任选20 个训练样本（男女各10 例）
+			\item dataset3 中的全部训练样本
+		\end{enumerate}
+		\item 分类器方法
+		\begin{enumerate}
+			\item 最小错误率贝叶斯分类器（假设正态分布，先验概率各50\%）
+			\item Fisher 线性判别（FLD）
+			\item 线性SVM
+			\item 采用BP 算法的MLP 神经网络（网络结构自定）
+		\end{enumerate}
+	\end{itemize}
+	\item 汇总测试错误率
+	\item 结合实验观察和对各种方法特点的理解，尝试对训练样本数、特征维数以及所选用的方法与测试结果的关系进行讨论。
+	\item （选做）选择具有代表性的实验结果，设法在由第3 列和第5 列特征组成的平面上粗略画出不同样本数和特征数下得到的分类器，观察分析所得分类器特性与样本数、特征、分类方法之间的关系。
 \end{enumerate}
 
-\subsection{Bayes最小错误率分类}
-\paragraph{}
-\paragraph{实验结果} 
-\subsection{}
+\section{实验方法}
+\paragraph{Bayes最小错误率分类}
+该方法假设男性、女性两类之内对所有特征服从多维正态分布。设两类的均值、协方差矩阵分别为$\mu_i,\Sigma_i\quad i=1,2$，则决策边界可按式\autoref{eq:bayes}计算：
+\begin{equation}
+\label{eq:bayes}
+-\frac12[(x-\mu_i)^\mathbf{T}\Sigma_i^{-1}(x-\mu_i)-(x-\mu_j)^\mathbf{T}\Sigma_j^{-1}(x-\mu_j)]-\frac12\ln \frac{|\Sigma_i|}{|\Sigma_j|}+\ln\frac{P(\omega_i)}{P(\omega_j)}=0
+\end{equation}
+若假设先验概率均为$0.5$，则上式最后一项可以忽略。
+\paragraph{Fisher线性分类器}
+二分类的线性判别函数的一般表达式为
+\begin{equation}
+f(\mathbf{x}) = \mathbf{w}^T \mathbf{x} + b
+\end{equation}
+该方法可以看作将所有样本投影到一维，并根据阈值$b$进行分类。Fisher线性判别的思想就是，选择投影方向，使得投影后两类相隔尽可能远，而同时每一类内部的样本又尽可能聚集。其数学表达为
+\begin{equation}
+\max J_F(w)=\frac{\tilde{S}_b}{\tilde{S}_w}=\frac{(\tilde{m}_1-\tilde{m}_2)^2}{\tilde{S}_1^2+\tilde{S}_2^2}
+\end{equation}
+其中$\tilde{m}_1, \tilde{m}_2$为两类投影后的均值
+\begin{equation}
+\tilde{m}_i=\frac1{N_i}\sum_{y_j\in \mathcal{Y}_i}y_j=\frac1{N_i}\sum_{x_j\in \mathcal{X}_i}w^\mathbf{T}\boldsymbol{x_j}=w^\mathbf{T}\boldsymbol{\mu}_i\quad i=1,2
+\end{equation}
+$\tilde{S}_1, \tilde{S}_2$为两类投影后的的类内离散度
+\begin{equation}
+\tilde{S}_i^2=\sum_{y_j\in \mathcal{Y}_i}(y_j-\tilde{m}_i)^2\quad i=1,2
+\end{equation}
+可以证明，在该准则下，投影方向$w$为
+\begin{equation}
+\mathbf{w} = \alpha \cdot (\mathbf{S}_1 + \mathbf{S}_2)^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)
+\end{equation}
+阈值为
+\begin{equation}
+b = -\frac12(\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2)(\mathbf{S}_1 + \mathbf{S}_2)^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)-\ln\frac{P(\omega_1)}{P(\omega_2)}
+\end{equation}
+其中$\mathbf{S}_1, \mathbf{S}_2$为类内离散度矩阵
+\begin{equation}
+\mathbf{S}_i=\sum_{x_j\in \mathcal{X}_i}(\boldsymbol{x_j}-\boldsymbol{\mu}_i)(\boldsymbol{x_j}-\boldsymbol{\mu}_i)^\mathbf{T}
+\end{equation}
+
+\section{实验结果}
+错误率汇总如表\ref{tab:error}
 
 \begin{table}
 	\centering
 	\begin{tabular}{c|c|cccc}
 	\hline
-	训练样本数 & 特征数 & Bayes & FLD & Linear SVM & MLP \\
+	训练样本数 & 特征数 & Bayes & FLD & Linear SVM & MLP (hidden nodes=12) \\
 	\hline
-	\multirow{2}*{10+10} & 10 &  \\
+	\multirow{2}*{10+10} & 10 & 12.538226\% & 26.299694\% & 24.464832\% & 72.47706422\% (epoch=100)\\
 		\cline{2-6}
-		& 2 & \\
+		& 2 & 22.324159\% & 15.596330\% & 17.125382\% & 82.87461774\% (epoch=100) \\
 	\hline
-	\multirow{2}*{469+485} & 10 &  \\
+	\multirow{2}*{469+485} & 10 & 16.819572\% & 10.091743\% & 11.926606\% & 11.62079511\% (epoch=500) \\
 		\cline{2-6}
-		& 2 & \\
+		& 2 & 	14.067278\% & 11.620795\% & 12.232416\% & 7.339449541\% (epoch=500) \\
 	\hline
 	\end{tabular}
-	\label{tab:lossform}
-	\caption{决策表}
+	\label{tab:error}
+	\caption{各种方法错误率汇总}
 \end{table}
 
 \section{分析与体会}
 
 
-\section{数据与方法}
+\section{数据与程序说明}
 \subsection{随机采样方法}
 采用{\ttfamily sample}函数生成一定范围内不重复的随机整数。例如：
 \begin{lstlisting}
@@ -84,7 +141,7 @@
 
 \subsection{程序说明}
 程序采用{\ttfamily Julia}语言，由{\ttfamily IJulia}提供对{\ttfamily Jupyter Notebook}的支持。
-\paragraph{简要方法描述} 见实验内容部分。
+\paragraph{简要方法描述} 见实验方法及结果部分。
 \paragraph{程序来源} 源代码均为本人编写。用到的包参见源程序中的说明。
 \paragraph{参数说明} 参见源程序中的说明。
 
