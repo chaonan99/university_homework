@@ -69,14 +69,14 @@
 \end{enumerate}
 
 \section{实验方法}
-\paragraph{Bayes最小错误率分类}
+\subsection{Bayes最小错误率分类}
 该方法假设男性、女性两类之内对所有特征服从多维正态分布。设两类的均值、协方差矩阵分别为$\mu_i,\Sigma_i\quad i=1,2$，则决策边界可按式\autoref{eq:bayes}计算：
 \begin{equation}
 \label{eq:bayes}
 -\frac12[(x-\mu_i)^\mathbf{T}\Sigma_i^{-1}(x-\mu_i)-(x-\mu_j)^\mathbf{T}\Sigma_j^{-1}(x-\mu_j)]-\frac12\ln \frac{|\Sigma_i|}{|\Sigma_j|}+\ln\frac{P(\omega_i)}{P(\omega_j)}=0
 \end{equation}
 若假设先验概率均为$0.5$，则上式最后一项可以忽略。
-\paragraph{Fisher线性分类器}
+\subsection{Fisher线性分类器}
 二分类的线性判别函数的一般表达式为
 \begin{equation}
 f(\mathbf{x}) = \mathbf{w}^T \mathbf{x} + b
@@ -106,10 +106,98 @@ b = -\frac12(\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2)(\mathbf{S}_1 + \mathbf{S}_
 \mathbf{S}_i=\sum_{x_j\in \mathcal{X}_i}(\boldsymbol{x_j}-\boldsymbol{\mu}_i)(\boldsymbol{x_j}-\boldsymbol{\mu}_i)^\mathbf{T}
 \end{equation}
 
-\section{实验结果}
-错误率汇总如表\ref{tab:error}
+\subsection{线性SVM}
+要引入支持向量的概念，首先定义{\hei 最优超平面}：
+\begin{theorem}
+一个超平面，如果它能够将训练样本没有错误的分开，并且两类训练样本中离超平面最近的样本与超平面之间的距离是最大的，则把这个超平面称作最优分类超平面，简称最优超平面。
+\end{theorem}
 
-\begin{table}
+最优超平面定义的分类决策函数为
+\begin{equation}
+f(\boldsymbol{x})=\mathrm{sgn}(g(\boldsymbol{x}))=\mathrm{sgn}(\boldsymbol{w}^\mathbf{T} \boldsymbol{x} + b)
+\end{equation}
+规范化最优超平面定义的分类决策规则为
+\begin{equation}
+y_i[(\boldsymbol{w}^\mathbf{T} \boldsymbol{x}) + b]\geq 1, \quad i=1,2,\dots ,N
+\end{equation}
+其中$y_i$为样本的标号，在二分类问题中，$y_i=\pm 1$。
+在该定义下，两类最近的样本$g(\boldsymbol{x})$分别取值$1$和$-1$，分类间隔为$M=\frac2{||\boldsymbol{w}||}$。这些样本被称为{\hei 支持向量}。故求最优超平面等效于求解规划问题：
+\begin{align}
+& \min_{\boldsymbol{w},b}\frac12||w||^2\\
+\text{s.t.}\qquad & y_i[(\boldsymbol{w}^\mathbf{T} \boldsymbol{x}) + b]-1\geq 0, \quad i=1,2,\dots , N
+\end{align}
+该问题的对偶问题为：
+\begin{align}
+& \max_{\boldsymbol{\alpha}}Q(\boldsymbol{\alpha})=\sum_{i=1}^N\alpha_i-\frac12\sum_{i,j=1}^N\alpha_i\alpha_jy_iy_j(\boldsymbol{x}_i\boldsymbol{x}_j)\\
+\text{s.t.} \qquad &\sum_{i=1}^N
+y_i\alpha_i=0\\
+& \alpha_i\geq 0 \quad i=1,2,\dots ,N
+\end{align}
+通过该对偶问题的解$\alpha_i$求出原问题的解
+\begin{equation}
+\boldsymbol{w}^*=\sum_{i=1}^N\alpha_i
+\end{equation}
+
+根据K-T条件，只有$\alpha_i>0$的样本有
+\begin{equation}
+y_i[(\boldsymbol{w}^\mathbf{T} \boldsymbol{x}) + b]-1= 0
+\end{equation}
+即为支持向量。根据支持向量处的方程可以求得阈值$b$。
+
+\subsection{MLP神经网络}
+如图\ref{fig:sn}，对于单个神经元有
+\begin{equation}
+h_{W,b}(x)=f(W^\mathbf{T}x+b)
+\end{equation}
+其中，$f(\cdot)$ 为激活函数，可以取为$Sigmoid$，$tanh$，$Relu$等形式
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=8cm]{resource/SingleNeuron.png}
+\caption{网络神经元}
+\caption*{\small 来源: \url{http://ufldl.stanford.edu/tutorial/supervised/MultiLayerNeuralNetworks/}}
+\label{fig:sn}
+\end{figure}
+
+将多个神经元连接为神经网络模型，如图\ref{fig:n331}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=8cm]{resource/Network331.png}
+\caption{单层神经网络}
+\caption*{\small 来源: \url{http://ufldl.stanford.edu/tutorial/supervised/MultiLayerNeuralNetworks/}}
+\label{fig:n331}
+\end{figure}
+
+网络前向传播公式为：
+\begin{align}
+a_1^{(2)} &= f(W_{11}^{(1)}x_1 + W_{12}^{(1)} x_2 + W_{13}^{(1)} x_3 + b_1^{(1)})  \\
+a_2^{(2)} &= f(W_{21}^{(1)}x_1 + W_{22}^{(1)} x_2 + W_{23}^{(1)} x_3 + b_2^{(1)})  \\
+a_3^{(2)} &= f(W_{31}^{(1)}x_1 + W_{32}^{(1)} x_2 + W_{33}^{(1)} x_3 + b_3^{(1)})  \\
+h_{W,b}(x) &= a_1^{(3)} =  f(W_{11}^{(2)}a_1^{(2)} + W_{12}^{(2)} a_2^{(2)} + W_{13}^{(2)} a_3^{(2)} + b_1^{(2)})
+\end{align}
+
+写成矩阵形式：
+\begin{align}
+z^{(l+1)} &= W^{(l)} a^{(l)} + b^{(l)}   \\
+a^{(l+1)} &= f(z^{(l+1)})
+\end{align}
+
+多个这样的层即可连接成多层神经网络，如图\ref{fig:n3322}。网络输出层与期望输出之间可以建立损失函数，并使用梯度下降法使输出逼近期望的输出。常用的$L_2$损失函数为
+\begin{align}
+J(W,b; x,y) = \frac{1}{2} \left\| h_{W,b}(x) - y \right\|^2.
+\end{align}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=8cm]{resource/Network3322.png}
+\caption{多层神经网络}
+\caption*{\small 来源: \url{http://ufldl.stanford.edu/tutorial/supervised/MultiLayerNeuralNetworks/}}
+\label{fig:n3322}
+\end{figure}
+
+\section{实验结果}
+错误率汇总如表\ref{tab:error}。
+
+\begin{table}[htbp]
 	\centering
 	\begin{tabular}{c|c|cccc}
 	\hline
@@ -124,12 +212,25 @@ b = -\frac12(\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2)(\mathbf{S}_1 + \mathbf{S}_
 		& 2 & 	14.067278\% & 11.620795\% & 12.232416\% & 7.339449541\% (epoch=500) \\
 	\hline
 	\end{tabular}
-	\label{tab:error}
 	\caption{各种方法错误率汇总}
+	\label{tab:error}
 \end{table}
 
-\section{分析与体会}
 
+\section{分析与体会}
+\subsection{训练样本数对实验结果的影响}
+从实验结果来看，大部分情况下减少训练样本错误率都会上升。只有在10特征的贝叶斯最小错误率实验中出现了相反的结果。而对于神经网络来说，样本较少的情况下无法学习到可用的分类器。这说明贝叶斯最小错误率分类器在样本较少时比较有效，而神经网络在样本较多时表现很好。
+\subsection{特征数对实验结果的影响}
+从实验结果来看，大部分情况下使用两个特征能够取得与10个特征相近，甚至更好的结果。这可能是由于除了这两个特征外，其他特征与男、女的相关性不大，导致分类器被误导。由图\ref{fig:fr}可以看出，线性可分性较好的特征有$V1$，$V3$，$V5$，而$V6-V10$几乎无法将男女分开。程序中对此进行了追加实验，使用6-10号特征，用MLP方法进行分类，其他参数和训练的次数都相同的情况下，分类错误率高达$23.55\%$。而使用1,3,5号特征的两个或三个，达到的分类效果在MLP分类器下都很接近。
+\subsection{分类方法对实验结果的影响}
+这里取使用所有训练样本，两个特征的实验结果比较各种方法。可以看出，贝叶斯最小错误率分类器表现最差。原因可能是训练样本和测试样本的两类比例有很大差别，而贝叶斯方法分类时对这种比例是敏感的，先验概率均为$0.5$的假设与测试集有很大偏差。Fisher线性分类器和线性SVM效果比较接近。其中Fisher线性分类器试图取得较大的类间距离和较小的类内距离，线性SVM基于支持向量取得支持向量之间的最大距离，二者在原理上有相似之处。而线性SVM不依赖两类的比例，因此比Fisher分类器稍好。MLP方法表现最好，因为它是非线性分类。观察图\ref{fig:fr}中的$V3$、$V5$组合，显然非线性分界面更为合适。但正是由于该方法是非线性的，在训练集很小时完全学不到可用的分类器。经过对预测结果的分析，MLP在仅有20个训练样本时，对测试集的性别预测也基本是男、女各一半。而测试集实际的男、女比例约为$4:1$，故错误率在$80\%$左右，和随机预测的错误率是吻合的。
+
+\begin{figure}
+\centering
+\includegraphics[width=15cm]{resource/feature_relation.png}
+\caption{特征之间关系图}
+\label{fig:fr}
+\end{figure}
 
 \section{数据与程序说明}
 \subsection{随机采样方法}
@@ -144,12 +245,5 @@ b = -\frac12(\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2)(\mathbf{S}_1 + \mathbf{S}_
 \paragraph{简要方法描述} 见实验方法及结果部分。
 \paragraph{程序来源} 源代码均为本人编写。用到的包参见源程序中的说明。
 \paragraph{参数说明} 参见源程序中的说明。
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=11cm]{resource/logo.jpg}
-\caption{全桥测试电路}
-\label{fig:fullarm}
-\end{figure}
 
 \end{document}
