@@ -1,0 +1,101 @@
+\input{header}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%封面与目录%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+\begin{center}
+% Upper part of the page
+\includegraphics[width=0.25\textwidth]{resource/logo.jpg}\\[1cm]
+\textsc{\LARGE Department of Automation}\\[1.5cm]
+\fs{\Large 检测原理系列实验}\\[0.5cm]
+% Title
+\hrulefill
+\\[0.8cm]{\centering \huge \hei 传感器特性实验报告}\\[0.4cm]
+\hrulefill
+\\[4cm]
+
+% Author and supervisor
+\begin{tabbing}       %tabbing  列表
+
+ \hspace*{5cm} \= \hspace{2.6cm} \= \kill
+ % \=     in tabbing environment, sets a tab stop
+ % \kill  in a\tabbing environment, deletes previous line so tabs can be set without outputting text.
+ % \>     in tabbing environment is a forward tab.
+
+\>{\fs\sihao\textbf {班\hspace{1cm}级 \ \ ：}}\>  {\centering\fs\sihao\textbf{~~~~~~~~~~~自~~3~2}} \\
+\\
+\>{\fs\sihao\textbf {姓\hspace{1cm}名 \ \ ：}}\>  {\centering\fs\sihao\textbf{~陈~昊~楠~(2013011449)}}\\
+\\
+\>{\fs\sihao\textbf {同\hspace{0.2cm}组\hspace{0.3cm}人 \ \ ：}}\>  {\centering\fs\sihao\textbf{~陈~炜~祥~(2013011456)}}\\
+\\
+\>{\fs\sihao\textbf {指导教师 \ \ ：}}\>  {\centering\fs\sihao\textbf{~~~~~~~~~~~陆~~~~~耿}} \\
+
+\end{tabbing}
+\vfill
+{\large \today}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%正文部分%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=11cm]{resource/principle.png}
+\caption{电感式传感器原理框图}
+\label{fig:sp}
+\end{figure}
+
+5．实验报告要求
+(1) 简述电感式传感器的工作原理。
+(2) 记录实验数据并作必要的分析与计算。
+(3) 回答思考题。
+
+\part{电感式传感器特性研究}
+\section{工作原理}
+电感式传器由振荡、开关路和放大输出三部分组成，如图\ref{fig:sp}所示。接通电源，振荡器开始振荡并产生一个交变的磁场，当金属目标板接近这一磁场并达到感应距离时，在目标板内产生涡流，从而导致振荡衰减，以至停振；振荡器从振荡到停振的变化被后级放大电路处理并转换成开关信号，从而达到检测目标板的目的。该传感器只能检测金属目标，而不同金属材料的工作点距离不同。
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=11cm]{resource/principle.png}
+\caption{电感式传感器原理框图}
+\label{fig:sp}
+\end{figure}
+
+\section{实验内容与数据}
+\paragraph{电感式传感器的感应范围和回差}
+\begin{table}
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+		工作点 & 释放点 & 回差 \\
+		\hline
+		PR\_DATA02.txt & dataset1.txt & 9.8837\% & 12.5000\% \\
+		dataset1.txt & PR\_DATA02.txt & 8.8415\% & 11.6279\% \\
+		\hline
+	\end{tabular}
+	\caption{电感式传感器的感应范围和回差}
+	\label{tab:srr}
+\end{table}
+\section{思考题}
+
+\part{磁式传感器特性研究}
+\section{工作原理}
+\section{实验内容与数据}
+\section{思考题}
+\part{光电传感器特性研究}
+\section{工作原理}
+\section{实验内容与数据}
+\section{思考题}
+\part{超声波传感器特性研究实验}
+\section{工作原理}
+\section{实验内容与数据}
+\section{思考题}
+\part{模拟量传感器特性研究（电感式）}
+\section{工作原理}
+\section{实验内容与数据}
+\section{思考题}
+
+\end{document}
