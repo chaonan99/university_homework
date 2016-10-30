@@ -1,6 +1,7 @@
 ## Project specific
 *.sublime-project
 *.sublime-workspace
+.ipynb_checkpoints/
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
