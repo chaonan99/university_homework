@@ -1,6 +1,6 @@
 # Pattern Recognition Homework
 
-Homework for pattern recognition.
+Homework for pattern recognition. Course note available [here](http://chaonan99-note.readthedocs.io/en/latest/PR/index.html).
 
 ## Contents of Homework
 1. Sex classification with height and weight feature
