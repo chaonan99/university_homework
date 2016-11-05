@@ -10,7 +10,7 @@
 \fs{\Large 检测原理系列实验}\\[0.5cm]
 % Title
 \hrulefill
-\\[0.8cm]{\centering \huge \hei 传感器特性实验报告}\\[0.4cm]
+\\[0.8cm]{\centering \huge \hei {\ttfamily AS-i}技术实验报告}\\[0.4cm]
 \hrulefill
 \\[4cm]
 
@@ -197,7 +197,7 @@ AS-i从站的I/O模块都可以下接一些传感器。本实验分别对5个AS-
 \subsection{编程方法}
 \section{实验内容}
 \subsection{模块地址与端口}
-将网关与计算机连接，用上一个实验中的AS-i控制工具软件查看6个从站的地址。地址记录如表\ref{tab:address}。
+\paragraph{从站地址} 将网关与计算机连接，用上一个实验中的AS-i控制工具软件查看6个从站的地址。地址记录如表\ref{tab:address}。
 
 \begin{table}[htbp]
 \centering
@@ -217,29 +217,165 @@ AS-i从站的I/O模块都可以下接一些传感器。本实验分别对5个AS-
 \label{tab:address}
 \end{table}
 
-进一步Data and Parameter 界面，查看各传感器占用的端口如表\ref{tab:port}
+\paragraph{数字量传感器端口} 进一步{\ttfamily Data and Parameter} 界面，查看各传感器占用的端口如表\ref{tab:port}。
 
 \begin{table}[htbp]
 \centering
 \begin{tabular}{|c|c|c|c|}
 	\hline
-	传感器 & 所接从站地址 & 通过I/O模块 & 通过显示模式 \\
+	传感器及输出 & 所接从站地址 & I/O口 \\
 	\hline
-	电容式 & 2A & 4号黄灯亮 & 0000变为1000 \\
-	反射板型光电 & 4A & IN1灭 & 0001变为0000 \\
-	电磁式 & 5A & I2亮 & 0001变为0011 \\
-	色标对比 & 5A & I1灭 & 0001变为0000 \\
-	倾角 & 1 & & 滚动条跟踪变化，0和1都变\\
-	超声波 & 1 & & 滚动条跟踪变化，只有1变 \\
+	漫反射型光电 & 7A & IN3 \\
+	电感式 & 7A & IN1 \\
+	电磁式 & 7A & OUT1 \\
+	红色LED & 8A & OUT0 \\
+	黄色LED & 8A & OUT1 \\
+	蓝色LED & 8A & OUT2 \\
 	\hline
 \end{tabular}
-\caption{AS-i系统数据表示方法实验现象}
+\caption{AS-i系统数据表示方法实验现象（部分）}
 \label{tab:port}
 \end{table}
 
+\paragraph{模拟量传感器} 监测重力传感器加砝码时的输出情况。如表\ref{tab:weight}。曲线如图\ref{fig:weight}。通过滑动{\ttfamily ch0} 通道的标尺改变输出电流，连接在模块输出端口的小电流表跟踪情况良好。
 
-\subsection{}
+\begin{minipage}{\textwidth}
+\begin{minipage}[b]{0.35\textwidth}
+\centering
+\pgfplotstabletypeset[
+	every head row/.style={before row=\hline, after row=\hline},
+	every last row/.style={after row=\hline},
+	every first column/.style={column type/.add={|}{|}},
+	every last column/.style={column type/.add={}{|}},
+	columns/gforce/.style={column name=所加砝码质量(g)},
+	columns/analog/.style={column name=输入通道示数},
+]{resource/weight.txt}
+\captionof{table}{重力传感器砝码质量与输出模拟量关系}
+\label{tab:weight}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{0.62\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel={砝码质量(g)},
+    ylabel={模拟量输出},
+    % legend pos=south east,
+    % legend entries={Concrete,Linoleum},
+    ]
+  \addplot table [x=gforce,y=analog] {resource/weight.txt};
+\end{axis}
+\end{tikzpicture}
+\captionof{figure}{重力传感器输出特性曲线}
+\label{fig:weight}
+\end{minipage}
+\end{minipage}
 
-(1) 简述西门子PLC控制器 CPU315-2DP的功能。 (2) 给出本实验系统的硬件站点配置、网络组态图，以及要求截图并做说明的内容。 (3) 给出PLC程序设计实验中两个题目的程序设计思路、截图及说明。 (4) 简述PLC的编程方法和技巧。 (5) 总结通过实验你对工业现场总线控制技术有了哪些了解。
+\subsection{实验系统的硬件站点配置和网络组态}
+按照指导书上的硬件站点配置教程进行实验。站点配置如图\ref{fig:hard_conf}，网络组态如图\ref{fig:net_org}。
+在图\ref{fig:hard_conf}中，
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=12cm]{resource/hard_config.png}
+\caption{站点配置图}
+\caption*{\small{\ttfamily PS 307 2A} 表示插入的电源模块，{\ttfamily DP} 表示主站系统，{\ttfamily CPU315-2DP} 下挂接从站系统。下方表格显示了网关的外围设备及其地址，分别为{\ttfamily 32 Byte Digital In/Out (0-31B)}（数字量输入/输出），{\ttfamily 56 Byte Analog Input (25-31)}（模拟量输入） 和 {\ttfamily 56 Byte Analog Output (25-31)}（模拟量输出）。}
+\label{fig:hard_conf}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=12cm]{resource/net_organize.png}
+\caption{网络组态图}
+\caption*{\small 图中显示了{\ttfamily DP}的地址为2，{\ttfamily CPU315-2DP} 地址为3。{\ttfamily VBG-PB-KF -R4} 图标已连接在网络上，说明在网络中添加网关成功。}
+\label{fig:net_org}
+\end{figure}
+
+\subsection{PLC编程和在线监控}
+\paragraph{符号表定义}
+按照指导书提供的 AS-i 地址与 I/Q 地址和 PIW/POW 地址对应关系，设置符号表如图\ref{fig:sign_form}。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=12cm]{resource/sign_form.png}
+\caption{符号表定义}
+\label{fig:sign_form}
+\end{figure}
+
+\paragraph{简单编程}
+按照图\ref{fig:easy}所示的模式测试各种数字量输入、输出模块，均能正确运行。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=12cm]{resource/program_easy.png}
+\caption{简单控制程序}
+\label{fig:easy}
+\end{figure}
+
+\paragraph{复杂网络组态}
+按照指导书在 {\ttfamily DP} 主站系统中挂接两个 {\ttfamily AS-i} 网关，硬件配置与网络组态的结果分别为图\ref{fig:hard_conf_2} 和图\ref{fig:net_org_2}。符号表的完整定义如图\ref{fig:sign_form_2}。
+
+\begin{figure}[htbp]
+\begin{minipage}{0.5\textwidth}
+\centering
+\includegraphics[width=7cm]{resource/hard_config_2.png}
+\caption{复杂网络站点配置图}
+\label{fig:hard_conf_2}
+\end{minipage}
+\hfill
+\begin{minipage}{0.5\textwidth}
+\centering
+\includegraphics[width=7cm]{resource/net_organize_2.png}
+\caption{复杂网络组态图}
+\label{fig:net_org_2}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=12cm]{resource/sign_form_2.png}
+\caption{符号表完整定义}
+\label{fig:sign_form_2}
+\end{figure}
+
+\subsection{PLC程序设计}
+\subsubsection{跑马灯实验}
+\paragraph{实验要求及预期} 要求能够实现电感式传器给出启动信号后，3个不同颜色的 LED 灯能依次循环点亮，每个圈的时间为2秒钟。当智能型电感式传器给出停止信号后，3个LED 彩灯无论 处于何种状态，均能立刻熄灭。
+
+\paragraph{设计思路}
+\begin{enumerate}
+\item {\ttfamily S\_PULSE}脉冲定时器输入端S有一个上升沿启动计时，定时器是在 S输入端信号状态为“1”时运行，运行时间由输入端 TV指定。只要定时器运行，输出端 Q的信号状态就为“1”。如果在时间间隔结束前，S输入端从“1”变为“0”，则定时器将停止。这种情况下，输出端 Q的信号状态为“0”。如果在定时器运行期间定时器复位 R输入从“0”变为“1”时，则定时器将被复位。当前时间和时间基准也被设置为零。
+\item 设计停止功能，只需将智能型电感式传器信号接在{\ttfamily S\_PULSE}脉冲定时器 R输入端。
+\item 设计循环计数功能，需要将每一级计时器的Q输出取反接到下一级的S输入，并将最后一级计时器Q输出取反接回第一级的S输入。
+\item 设计启动信号。由于定时器必须在S输入保持为1时才能运行，因此需要锁存启动信号，将电感式传器信号接到SR锁存器S输入端。这样，只要启动信号给出，SR锁存器的Q输出端就可以保持为“1”。这种设置也防止了启动信号重复输入会重复触发计时器的情况。
+\item 启动信号与循环信号相与（串联）。当装置未启动时，循环信号保持为“1”，而锁存器输出为“0”。启动信号给出，锁存器输出上升沿启动计时。当计数到最后一级时，最后一级输出端 Q先变为“1”，计时结束后产生下降沿，取反回到第一级提供上升沿，则启动下一轮计数。
+\end{enumerate}
+
+\paragraph{程序框图} 如图\ref{fig:horse}。
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=16cm]{resource/program_horse.png}
+\caption{跑马灯程序框图}
+\label{fig:horse}
+\end{figure}
+
+\subsubsection{应变式传感器称重显示实验}
+\paragraph{实验要求及预期} 要求能够实现在应变式传感器上放置小砝码并一一增加，当砝码个数超过5个时LED红灯点亮报警（1个砝码重99-100），可在电流表上以分度显示砝码个数或以分度显示砝码重量。
+\paragraph{设计思路}
+\begin{enumerate}
+\item 重力传感器在没有重物时输出不一定为0，需要零点调节。可以将传感器接在一个减法器输入端，减法器另一端可调，以实现调零点。
+\item 模拟量输出可以使用除法器，除以单位砝码质量，即可得到砝码个数。通过比较器将个数与6比较，则可以判断是否超出。
+\item 为了调节电流表的输入量，只需在除法器后再连接乘法器，调节扩大的系数，即可使砝码个数和分度对应起来。
+\end{enumerate}
+\paragraph{程序框图} 如图\ref{fig:calculate}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=13cm]{resource/program_calculate.png}
+\caption{称重程序框图}
+\label{fig:calculate}
+\end{figure}
+
 
 \end{document}
