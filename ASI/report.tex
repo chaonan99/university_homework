@@ -40,11 +40,6 @@
 \clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%正文部分%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-4．实验报告要求
-(1) 简述AS-i总线的原理和性能特点。
-(2) AS-i专用电源有哪些特点？
-(3) 记录实验中出现的现象并分析其工作原理。
-(4) 回答思考题。
 \part{AS-i总线技术(V3.0)特性研究}
 \section{AS-i总线原理与特点}
 \subsection{AS-i总线概述}
@@ -84,18 +79,18 @@ AS-i系统主站和从站之间的通信采用非屏蔽、非绞接的两芯电�
 实验现象如下：
 \paragraph{一个AS-i从站丢失}
 \begin{enumerate}
-\item 拔出现场型4入/4出模块，网关LCD显示器显示{\ttfamily Missing 4A}，Config err红灯亮；将现场型4入/4出模块重新接入系统，网关红灯灭，系统恢复正常。这是因为该模块地址没有变，只是拔下模块，系统在轮询到该地址时将不会得到输入信号，因此显示丢失。重新接入后又能询问到信号，因此恢复正常。
-\item 将现场型2输入模拟量模块的紧固螺钉拧松，使网关LCD显示器显示{\ttfamily Missing 3}，Config err红灯亮。将其重新编址为6，再次接入没有恢复正常（此时总线系统处于运行模式），进退一次配置模式，则恢复正常且模块被编址为6。
-\item 将现场型2输入模拟量模块的紧固螺钉拧松，使网关LCD显示器显示{\ttfamily Missing 3}，Config err红灯亮。将其重新编址为0，再次接入则恢复正常，模块地址仍为6。
+\item 拔出现场型4入/4出模块，网关LCD显示器显示 {\ttfamily Missing 4A}，Config err红灯亮；将现场型4入/4出模块重新接入系统，网关红灯灭，系统恢复正常。这是因为该模块地址没有变，只是拔下模块，系统在轮询到该地址时将不会得到输入信号，因此显示丢失。重新接入后又能询问到信号，因此恢复正常。
+\item 将现场型2输入模拟量模块的紧固螺钉拧松，使网关LCD显示器显示 {\ttfamily Missing 3}，Config err红灯亮。将其重新编址为6，再次接入没有恢复正常（此时总线系统处于运行模式），进退一次配置模式，则恢复正常且模块被编址为6。
+\item 将现场型2输入模拟量模块的紧固螺钉拧松，使网关LCD显示器显示 {\ttfamily Missing 3}，Config err红灯亮。将其重新编址为0，再次接入则恢复正常，模块地址仍为6。
 \end{enumerate}
 \paragraph{一个AS-i从站未配置}
 \begin{enumerate}
 \item 将现场型4入/4出模块的电源插头（黑色）拧下，即卸掉1个从站。将网关置于配置模式，网关LCD显示器将循环显示系统中的4个从站地址。然后保存当前配置并将网关置于运行模式，AS-i系统运行正常。
-\item 将现场型4入/4出模块重新接入系统，Config err红灯亮，模块的{\ttfamily Fault}红灯亮，网关LCD显示器显示{\ttfamily Unknown 4A}。重新进退一次配置模式，则系统又恢复正常。因为配置模式中可以重新设定所有的地址，之前地址没有冲突，因此是可以重新设定的。
+\item 将现场型4入/4出模块重新接入系统，Config err红灯亮，模块的 {\ttfamily Fault}红灯亮，网关LCD显示器显示 {\ttfamily Unknown 4A}。重新进退一次配置模式，则系统又恢复正常。因为配置模式中可以重新设定所有的地址，之前地址没有冲突，因此是可以重新设定的。
 \end{enumerate}
 \paragraph{两个AS-i从站地址相同}
 \begin{enumerate}
-\item 将网关置于配置模式，用手持编程器为控制箱型2输出模拟量模块和现场型2输入模拟量模块的地址配置为相同地址，保存当前配置并将网关置于运行模式，网关的Config err红灯亮，显示{\ttfamily Missing 1}和{\ttfamily Duplicate 3}。
+\item 将网关置于配置模式，用手持编程器为控制箱型2输出模拟量模块和现场型2输入模拟量模块的地址配置为相同地址，保存当前配置并将网关置于运行模式，网关的 Config err 红灯亮，显示 {\ttfamily Missing 1} 和 {\ttfamily Duplicate 3}。
 \item 重新置网关于配置模式，用手持编程器为控制箱型2输出模拟量模块和现场型2输入模拟量模块的地址重新配置为不同的地址，网关LCD显示器将循环显示系统中的5个从站地址，保存当前配置并将网关置于运行模式，AS-i系统恢复正常。
 \end{enumerate}
 
@@ -123,15 +118,68 @@ AS-i从站的I/O模块都可以下接一些传感器。本实验分别对5个AS-
 \subsection{AS-i控制工具软件使用}
 按照实验指导书进行软件的配置。
 \paragraph{编址}
-若在线修改从站系统的地址，观察到软件界面右下角出现{\ttfamily Configuration error}，面板红灯亮。
+若在线修改从站系统的地址，观察到软件界面右下角出现 {\ttfamily Configuration error}，面板红灯亮。
 \paragraph{数据表示方法}
-点击控制箱型 4 入/4 出模块（对应电容传感器）地址位，在{\ttfamily Slave Configurtion Address}的{\ttfamily Data and parameter}菜单项中观察，激活电容传感器，对应Input 3 打勾。用鼠标分别点中这个模块输出Outputs\quad 0,1,2,3，模块面板上OUT\quad 1,2,3,4的黄灯亮。
+点击控制箱型 4 入/4 出模块（对应电容传感器）地址位，在 {\ttfamily Slave Configurtion Address} 的 {\ttfamily Data and parameter} 菜单项中观察，激活电容传感器，对应Input 3 打勾。用鼠标分别点中这个模块输出Outputs\quad 0,1,2,3，模块面板上OUT\quad 1,2,3,4的黄灯亮。
 
 \subsection{AS-i输出模块的看门狗功能}
 \paragraph{看门狗功能开启}
 中断通信，模块的FAULT指示灯全亮，且输出黄灯灭，网关LED灯灭。重新将通信置于正常，FAULT指示灯灭，输出黄灯和网关LED又按原来的方式亮。
 \paragraph{看门狗功能取消}
 中断通信，模块的FAULT指示灯全亮，但输出黄灯不灭，网关LED灯也不灭灭。重新将通信置于正常，FAULT指示灯灭。
+
+\subsection{色标、超声波和倾角传感器的调节方法}
+\paragraph{色标传感器} 按指导书调节即可。
+\paragraph{超声波传感器} 按指导书设定传感器的A1，A2工作点，在网关LCD显示屏进入 {\ttfamily Analog Input} 跟踪传感器输出，记录目标板与传感器间距和输入通道示数的关系如表\ref{tab:dc}。关系曲线如图\ref{fig:dcr}。
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|ccccc|}
+	\hline
+	目标板与传感器间距(cm) & 5 & 10 & 15 & 20 & 25 \\
+	\hline
+	输入通道示数 & 3994 & 7643 & 12302 & 16523 & 19977 \\
+	\hline
+\end{tabular}
+\caption{超声传感器距离与输出关系}
+\label{tab:dc}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=11cm]{resource/dcr.png}
+\caption{超声传感器距离示数曲线}
+\label{fig:dcr}
+\end{figure}
+
+\paragraph{倾角传感器} 按指导书设定传感器的x，y轴输出模式，在网关LCD显示屏进入 {\ttfamily Analog Input} 跟踪传感器输出，记录目标板与传感器x，y方向倾角和输入通道示数的关系如表\ref{tab:dq}。关系曲线如图\ref{fig:dqr}。
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|ccccccc|}
+	\hline
+	\multirow{2}*{x方向} & 倾角 & $0^{\circ}$ & $15^{\circ}$ & $30^{\circ}$ &
+		$45^{\circ}$ & $60^{\circ}$ & $75^{\circ}$ & $90^{\circ}$ \\
+	\cline{2-9}
+	& 输入通道示数 & 4139 & 4670 & 6146 & 7026 & 8253 & 9371 & 11431 \\
+	\hline
+	\multirow{2}*{y方向} & 倾角 & $0^{\circ}$ & $15^{\circ}$ & $30^{\circ}$ &
+		$45^{\circ}$ & $60^{\circ}$ & $75^{\circ}$ & $90^{\circ}$ \\
+	\cline{2-9}
+	& 输入通道示数 & 4234 & 4767 & 5318 & 5982 & 6731 & 7106 & 8381 \\
+	\hline
+\end{tabular}
+\caption{倾角传感器x，y方向倾角与输出关系}
+\label{tab:dq}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=11cm]{resource/dqr.png}
+\caption{倾角传感器距离示数曲线}
+\label{fig:dqr}
+\end{figure}
+
 \section{思考题}
 \begin{enumerate}
 \item 利用网关给从站编址，网关处于配置模式和运行模式方法一样吗？为什么？\\
@@ -139,15 +187,59 @@ AS-i从站的I/O模块都可以下接一些传感器。本实验分别对5个AS-
 \item 0地址的作用？自动赋值功能需满足那些条件？\\
 从错误诊断部分的实验结果来看，0地址表示自动分配地址。自动赋值功能需要拔下之前地址分配没有错误，且地址没有在配置模式中重新设定过，网关才能确定需要自动为其分配的地址值。
 \item 输出模块“看门狗”功能的作用是什么？\\
+看门狗为整个系统的中保护机制，当通信断开时候，会限制输出为低电平， 从而保护电路输出及工作人员的安全。
 
 \end{enumerate}
 \part{实现PLC控制器对其外围I/O设备的控制}
+\section{实验原理}
+\subsection{PLC控制器功能}
+\
+\subsection{编程方法}
+\section{实验内容}
+\subsection{模块地址与端口}
+将网关与计算机连接，用上一个实验中的AS-i控制工具软件查看6个从站的地址。地址记录如表\ref{tab:address}。
 
-\begin{figure}[htbp]
+\begin{table}[htbp]
 \centering
-\includegraphics[width=11cm]{resource/logo.jpg}
-\caption{全桥测试电路}
-\label{fig:fullarm}
-\end{figure}
+\begin{tabular}{|c|c|c|}
+	\hline
+	从站类型 & 从站名称 & 地址 \\
+	\hline
+	开关量 & G2扁平模块 （4入3出） & 7A \\
+	开关量 & KE控制箱型模块 (4入3出) & 8A \\
+	开关量 & 智能型光电传感器 & 5 \\
+	开关量 & 智能型电感式传感器 & 6 \\
+	模拟量 & 模拟量输入模块 （2入） & 27 \\
+	模拟量 & 模拟量输出模块 （2出） & 26 \\
+	\hline
+\end{tabular}
+\caption{AS-i从站地址（实验二）}
+\label{tab:address}
+\end{table}
+
+进一步Data and Parameter 界面，查看各传感器占用的端口如表\ref{tab:port}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|c|c|}
+	\hline
+	传感器 & 所接从站地址 & 通过I/O模块 & 通过显示模式 \\
+	\hline
+	电容式 & 2A & 4号黄灯亮 & 0000变为1000 \\
+	反射板型光电 & 4A & IN1灭 & 0001变为0000 \\
+	电磁式 & 5A & I2亮 & 0001变为0011 \\
+	色标对比 & 5A & I1灭 & 0001变为0000 \\
+	倾角 & 1 & & 滚动条跟踪变化，0和1都变\\
+	超声波 & 1 & & 滚动条跟踪变化，只有1变 \\
+	\hline
+\end{tabular}
+\caption{AS-i系统数据表示方法实验现象}
+\label{tab:port}
+\end{table}
+
+
+\subsection{}
+
+(1) 简述西门子PLC控制器 CPU315-2DP的功能。 (2) 给出本实验系统的硬件站点配置、网络组态图，以及要求截图并做说明的内容。 (3) 给出PLC程序设计实验中两个题目的程序设计思路、截图及说明。 (4) 简述PLC的编程方法和技巧。 (5) 总结通过实验你对工业现场总线控制技术有了哪些了解。
 
 \end{document}
