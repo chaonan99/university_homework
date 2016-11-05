@@ -188,13 +188,17 @@ AS-i从站的I/O模块都可以下接一些传感器。本实验分别对5个AS-
 从错误诊断部分的实验结果来看，0地址表示自动分配地址。自动赋值功能需要拔下之前地址分配没有错误，且地址没有在配置模式中重新设定过，网关才能确定需要自动为其分配的地址值。
 \item 输出模块“看门狗”功能的作用是什么？\\
 看门狗为整个系统的中保护机制，当通信断开时候，会限制输出为低电平， 从而保护电路输出及工作人员的安全。
-
 \end{enumerate}
-\part{实现PLC控制器对其外围I/O设备的控制}
+
+
+\part{实现{\ttfamily PLC}控制器对其外围I/O设备的控制}
 \section{实验原理}
-\subsection{PLC控制器功能}
-\
-\subsection{编程方法}
+\subsection{{\ttfamily PLC}控制器功能}
+{\ttfamily PLC}（可编程控制器）可以通过接口与AS-i网关硬件和计算机连接，通过软件的编程实现对硬件的控制，且可以支持多点通信，同时控制多个AS-i主站，组成复杂网络。\\
+本实验系统中使用的{\ttfamily PLC}选用西门子公司的 {\ttfamily S7-300}系列的 {\ttfamily CPU 315-2DP}，它是一种小型模块化可编程控制器，有两个通信接口，分别为 {\ttfamily PRFIBUS-DP}接口和MPI接口。使用专用转换器和紫色屏蔽电缆直接将{\ttfamily PLC}的{\ttfamily PRFIBUS-DP}接口与{\ttfamily AS-i}网关的{\ttfamily RS-485}接口连接，完成{\ttfamily PRFIBUS-DP}网络层的硬件连接。使用编程适配器{\ttfamily MPI Link-BUS}直接将{\ttfamily PLC}的{\ttfamily MPI}接口与PC机的{\ttfamily BUS}接口连接，完成{\ttfamily MPI}多点通信层的硬件连接。
+
+\subsection{编程方法} 实验中使用 {\ttfamily AS-interface Control Tools}软件,完成 {\ttfamily AS-i}系统的配置和网络组态。使用STEP7标准软件包中的SIMATIC管理器、符号编辑器、编程语言、硬件配置和网络组态等软件实现对SIMATIC可编程控制器的编程。具体方法按实验指导书操作即可。
+
 \section{实验内容}
 \subsection{模块地址与端口}
 \paragraph{从站地址} 将网关与计算机连接，用上一个实验中的AS-i控制工具软件查看6个从站的地址。地址记录如表\ref{tab:address}。
