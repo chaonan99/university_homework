@@ -6,17 +6,17 @@ from sklearn import svm
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--train_pkl', type=str,
-        default="/home/ubuntu/data/cup_dataset/train_forstu.pickle",
+        default="/home/chenhaonan/data/Image/cup_dataset/train_forstu.pickle",
         help='Directory for train pickle')
     parser.add_argument('--test_pkl', type=str,
-        default="/home/ubuntu/data/cup_dataset/valid_forstu.pickle",
+        default="/home/chenhaonan/data/Image/cup_dataset/valid_forstu.pickle",
         help='Directory for test pickle')
     return parser.parse_args()
 
 
 def read_pickle(file_path):
-    with open(file_path, "r") as fin:
-        return pickle.load(fin)
+    with open(file_path, "rb") as fin:
+        return pickle.load(fin, encoding="latin1")
     return None
 
 
