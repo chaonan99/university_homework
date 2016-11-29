@@ -10,3 +10,7 @@ This repository holds some of my homework, report, etc. The master branch is jus
 	* Just boring report of experiment.
 * [Summer Intern Report](https://github.com/chaonan99/university_homework/tree/summer_intern_report)
 	* Boring report.
+* [AI project: cup classification](https://github.com/chaonan99/university_homework/tree/AI_cup_class)
+	* Cup image classification
+	* Pre-extracted feature provided, using [scikit-learn](http://scikit-learn.org/stable/)
+	* Deep learning based model using [Tensorflow](https://www.tensorflow.org/)
