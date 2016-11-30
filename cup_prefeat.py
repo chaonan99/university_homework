@@ -27,7 +27,7 @@ def parse_args():
 
 def read_pickle(file_path):
     with open(file_path, "rb") as fin:
-        return pickle.load(fin, encoding="latin1")
+        return pickle.load(fin)
     return None
 
 
@@ -58,6 +58,8 @@ if __name__ == '__main__':
         MLPClassifier(alpha=1e-5, hidden_layer_sizes=256, random_state=1, max_iter=3000),
         ExtraTreesClassifier(),
     ]
+    selectors = [SelectKBest(f_classif, k=256)]
+
     print("Test accuracy")
     test_res = pd.DataFrame([["{0:.2f}%".format(do_selection_and_prediction(sel, clf, X_train_raw,
             X_test_raw, y_train, y_test)*100) for clf in classifiers] for sel in selectors],
