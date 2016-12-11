@@ -14,6 +14,11 @@ Homework for pattern recognition. Course note available [here](http://chaonan99-
 	* Data
 		* `dataset3.txt` and `dataset4.txt` are both provided by teacher.
 	* Language: [Julia](http://julialang.org/) ([IJulia](https://github.com/JuliaLang/IJulia.jl))
+3. Sex classification by feature selection.
+    * Language: Python with [scikit-learn](http://scikit-learn.org/)
+4. Clustering and decomposition.
+    * Method: PCA, t-SNE, k-means, hierarchical cluster
+    * Language: Python with [scikit-learn](http://scikit-learn.org/)
 
 ## LICENSE
 * Code is under MIT license
